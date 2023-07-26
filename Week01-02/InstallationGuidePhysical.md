@@ -134,7 +134,7 @@ http_server = WSGIServer(('', serverport), app)
 http_server.serve_forever()
 ```
 
-(Instead of git cloning the repos you can also replace the ```src``` folder in your local ```catkin_ws``` directory with [this src folder provided](https://drive.google.com/file/d/1VSmSmg7iuF-tQzWhlnmtwjsNhzxlPqU8/view?usp=sharing), which contains the required models, run ```catkin_make``` again under ```catkin_ws``` with the downloaded ```src``` folder)
+**[EDIT]** Please replace the ```src``` folder in your local ```catkin_ws``` directory with [this src folder provided](https://drive.google.com/file/d/1VSmSmg7iuF-tQzWhlnmtwjsNhzxlPqU8/view?usp=sharing), which contains the required models, launch / world files, and the ```scene_manager.py``` script, then run ```catkin_make``` again under ```catkin_ws``` with the downloaded ```src``` folder).
 
 ---
 # Running on the Physical Robot
