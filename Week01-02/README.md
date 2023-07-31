@@ -24,6 +24,8 @@ You will implement keyboard teleoperations by editing [line 142 - 155 of operate
 **Note:** In order to run ```operate.py```, your terminal needs to be in the directory where [operate.py](operate.py) is (eg. ```ECE4078_Lab_2023/Week01-02/```)
 
 **You don't have to use the provided scripts.** Feel free to be creative and write your own scripts for teleoperating the robot with keyboard.
+
+[EDIT] If you don't want to type the ```--ip``` and ```--port``` args every time, simply change the default arg values ([line 176-177 in operate.py](operate.py#L176)) to the robot's ip ```192.168.50.1``` and port ```8080```, then the next time you run operate.py with the physical robot you won't need to specify the ip and port any more, simply run ```python3 operate.py```.
 ---
 
 ## Marking Instructions 
@@ -52,6 +54,8 @@ You will have a **STRICT** 10min time limit to get marked. You may open up the m
 Zip your whole Week01-02 folder (including the util and pics folder, your modified operate.py with the teleop codes, your readme file) and submit it via the Moodle submission box (according to your lab session). This submission is due by the starting time of the lab session, which means you should **submit your script BEFORE you come to the week 3 lab**. 
 
 **Tip:** Other than a readme file describing your implementation, you may also include a text file in the zip file with a list of commands to use, if you don't know all the commands by heart.
+
+[EDIT] When submitting codes for marking, you don't need to include the venv in the submission folder, as it would be a big zip file to upload/download and takes forever to unzip. You can install the venv in a local directory, and only submit a Week01-02 zip that includes the required scripts for running the teleoperation (operate.py, util/, pics/) on Moodle. Then during marking activate your local venv, cd into the downloaded and unzipped submission and run the live demo
 
 #### Step 2: 
 **Do this BEFORE the demonstrator come to mark you**
