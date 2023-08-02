@@ -57,6 +57,8 @@ Zip your whole Week01-02 folder (including the util and pics folder, your modifi
 
 [EDIT] When submitting codes for marking, you don't need to include the venv in the submission folder, as it would be a big zip file to upload/download and takes forever to unzip. You can install the venv in a local directory, and only submit a Week01-02 zip that includes the required scripts for running the teleoperation (operate.py, util/, pics/) on Moodle. Then during marking activate your local venv, cd into the downloaded and unzipped submission and run the live demo
 
+[EDIT] Please check that you have clicked the submit button on Moodle (may need to scroll down a bit) when submitting your codes, instead of saving it as a draft.
+
 #### Step 2: 
 **Do this BEFORE the demonstrator come to mark you**
 
