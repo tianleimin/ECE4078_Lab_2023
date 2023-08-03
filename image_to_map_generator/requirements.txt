@@ -1,0 +1,4 @@
+numpy==1.21.4
+opencv-python==4.6.0.66
+PyQt5==5.15.9
+PyYaml==6.0
