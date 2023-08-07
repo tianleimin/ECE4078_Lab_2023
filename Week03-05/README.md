@@ -138,3 +138,6 @@ Please see [M2 marking instructions](M2_marking_instructions.md)
 - Beware of the sign error that can happen with calculating the difference between the measurement and estimate in the correction step
 - The state vector x will be appended with the aruco marker measurements. Take a note of the location of x that should be updated in the motion model.
 - In the prediction step, we should update the mean belief by driving the robot.
+- [NEW] If you encounter error while trying to install ```opencv-contrib-python==4.1.2.30```, install the newest version of opencv-contrib-python by not specifying the version.
+- [NEW] If you cannot run ```from machinevisiontoolbox import Image, CentralCamera``` due to spatialmath error, uninstall the current version of spatialmath-python and re-install with the newest one.
+- [NEW] ```calib_pic.py``` and ```camera_calibration.py``` have been updated to work with the 2 changes above and the newest version of machine vision toolbox, please check if you have the correct code.

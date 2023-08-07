@@ -21,7 +21,7 @@ class calibration:
         if self.command['image']:
             for i in range(images_to_collect):
                 image = self.pibot.get_image()
-                filename = "calib_{}.png".format(i)
+                filename = "images/calib_{}.png".format(i)
                 image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
                 cv2.imwrite(filename, image)
             self.finish = True
