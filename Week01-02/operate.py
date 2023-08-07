@@ -142,16 +142,16 @@ class Operate:
             ############### add your codes below ###############
             # drive forward
             if event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
-                pass # TODO: replace with your code to make the robot drive forward
+                self.pibot.set_velocity([1,0], 100, 50, 1) # TODO: replace with your code to make the robot drive forward
             # drive backward
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
-                pass # TODO: replace with your code to make the robot drive backward
+                self.pibot.set_velocity([-1,0], 100, 50, 1) # TODO: replace with your code to make the robot drive backward
             # turn left
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
-                pass # TODO: replace with your code to make the robot turn left
+                self.pibot.set_velocity([0,1], 100, 50, 1) # TODO: replace with your code to make the robot turn left
             # drive right
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
-                pass # TODO: replace with your code to make the robot turn right
+                self.pibot.set_velocity([0,-1], 100, 50, 1) # TODO: replace with your code to make the robot turn right
             ####################################################
             # stop
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
