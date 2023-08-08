@@ -141,3 +141,4 @@ Please see [M2 marking instructions](M2_marking_instructions.md)
 - [NEW] If you encounter error while trying to install ```opencv-contrib-python==4.1.2.30```, install the newest version of opencv-contrib-python by not specifying the version.
 - [NEW] If you cannot run ```from machinevisiontoolbox import Image, CentralCamera``` due to spatialmath error, uninstall the current version of spatialmath-python and re-install with the newest one.
 - [NEW] ```calib_pic.py``` and ```camera_calibration.py``` have been updated to work with the 2 changes above and the newest version of machine vision toolbox, please check if you have the correct code.
+- [NEW] If you are using an older version of the machine-vision-toolbox, you can use the previous camera calibration script ```camera_calibration_old.py```, or update your MVT by reinstalling it
