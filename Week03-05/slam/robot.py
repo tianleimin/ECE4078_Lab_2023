@@ -23,7 +23,7 @@ class Robot:
         # Apply the velocities
         dt = drive_meas.dt
         if angular_velocity == 0:
-            self.state[0] += np.cos(self.state[2]) * linear_velocity * dt
+            self.state[0] += np.cos(self.state[2]) * linear_velocity * dt # self.state is a prediction about the position of our robot
             self.state[1] += np.sin(self.state[2]) * linear_velocity * dt
         else:
             th = self.state[2]
@@ -36,18 +36,20 @@ class Robot:
         # The index list tells the function which landmarks to measure in order.
         
         # Construct a 2x2 rotation matrix from the robot angle
-        th = self.state[2]
+        th = self.state[2] # our orientation angle
         Rot_theta = np.block([[np.cos(th), -np.sin(th)],[np.sin(th), np.cos(th)]])
         robot_xy = self.state[0:2,:]
 
         measurements = []
         for idx in idx_list:
             marker = markers[:,idx:idx+1]
-            marker_bff = Rot_theta.T @ (marker - robot_xy)
-            measurements.append(marker_bff)
+            marker_bff = Rot_theta.T @ (marker - robot_xy)  # transpose of rot_theta and then multiplying by the vector to the marker. 
+            # represents the position or coordinates of a marker in a robot's body-fixed frame (BFF). In robotics, a body-fixed frame is a coordinate frame that is attached to and moves with the robot itself.
+            # marker - robot_xy) gets the direction vector from the origin. Fixed frame
+            measurements.append(marker_bff) # marker_bff gives the pure coords of the marker
 
         # Stack the measurements in a 2xm structure.
-        markers_bff = np.concatenate(measurements, axis=1)
+        markers_bff = np.concatenate(measurements, axis=1) # puts all coords into a vector
         return markers_bff
     
     def convert_wheel_speeds(self, left_speed, right_speed):
@@ -65,8 +67,8 @@ class Robot:
     # --------------------------
 
     def derivative_drive(self, drive_meas):
-        # Compute the differential of drive w.r.t. the robot state
-        DFx = np.zeros((3,3))
+        # Compute the differential of drive with reference to the robot state
+        DFx = np.zeros((3,3)) #this is our Jacobian
         DFx[0,0] = 1
         DFx[1,1] = 1
         DFx[2,2] = 1
@@ -74,10 +76,10 @@ class Robot:
         lin_vel, ang_vel = self.convert_wheel_speeds(drive_meas.left_speed, drive_meas.right_speed)
 
         dt = drive_meas.dt
-        th = self.state[2]
+        th = self.state[2] # thete, our angle of robot compared to a fixed axis
         
         # TODO: add your codes here to compute DFx using lin_vel, ang_vel, dt, and th
-
+        
         return DFx
 
     def derivative_measure(self, markers, idx_list):
