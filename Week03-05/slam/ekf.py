@@ -90,7 +90,7 @@ class EKF:
         F = self.state_transition(raw_drive_meas)
         x = self.get_state_vector()
 
-        # TODO: add your codes here to compute the predicted x
+        # TODO: add your codes here to complete the prediction step
 
     # the update step of EKF
     def update(self, measurements):
