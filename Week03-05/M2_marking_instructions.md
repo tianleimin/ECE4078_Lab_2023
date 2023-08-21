@@ -8,6 +8,16 @@ You will need to demonstrate your SLAM on the physical robot during the Week 6 l
 
 Each team will have a **STRICT** 15 minutes total time limit to perform the live robot demo for marking according to a random schedule. The 15min marking slot starts when you are called to the marking arena and are asked to start downloading your code submission from Moodle. You will need to submit the map(s) generated during the live demo marking to Moodle **before** the 15min runs out. You may open up the marking checklist, which is a simplified version of the following steps to remind yourself of the marking procedures. 
 
+### Evaluation scheme
+To allow for the best performance of your SLAM module, you will be marked based on finding the 10 ARUCO markers, *the RMSE after alignment* between your estimations and the true locations of these markers during a live demonstration conducted in a **NEW MAP** in week 6. After the live demo, the map generated will be marked against the ground-truth map using [SLAM_eval.py](SLAM_eval.py). 5pt will be deducted for each marker the robot has collided into during the live demo, with a max of 3 collisions allowed per run. Your M2 mark is computed as:
+
+slam_score = ((0.12 - Aligned_RMSE)/(0.12 - 0.02)) x 80
+
+**Total M2 mark = slam_score + (NumberOfFoundMarkers x 2) - (NumberOfCollidedMarkers x 5)**
+
+**Note:** If your Aligned_RMSE value goes above the upper bound 0.12, your slam_score will be 0. If the Aligned_RMSE value goes below the lower bound 0.02, your slam_score will be 80, i.e., 0 ≤ slam_score ≤ 80
+
+
 ### Marking steps
 #### Step 1:
 **Do this BEFORE your lab session**
