@@ -66,6 +66,7 @@ class Robot:
 
     def derivative_drive(self, drive_meas):
         # Compute the differential of drive w.r.t. the robot state
+        
         DFx = np.zeros((3,3))
         DFx[0,0] = 1
         DFx[1,1] = 1
@@ -73,22 +74,18 @@ class Robot:
 
         lin_vel, ang_vel = self.convert_wheel_speeds(drive_meas.left_speed, drive_meas.right_speed)
 
+        R = lin_vel/ang_vel
+
         dt = drive_meas.dt
         th = self.state[2]
         
         # ~~~~~~~~~~~~~~~~~~~~~ TODO: add your codes here to compute DFx using lin_vel, ang_vel, dt, and th ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        dydx = lin_vel*np.sin(th) * (1/(lin_vel*np.cos(th)))
-        dxdtheta = lin_vel*np.cos(th) * (1/ang_vel)
-        dydtheta = lin_vel*np.sin(th) * (1/ang_vel)
-
-        DFx[0,1] = 1/dydx
-        DFx[1,0] = dydx
-
-        DFx[0,2] = dxdtheta
-        DFx[2,0] = 1/dxdtheta
-
-        DFx[1,2] = dydtheta
-        DFx[2,1] = 1/dydtheta
+        if ang_vel == 0:
+            DFx[0,2] = -lin_vel*np.sin(th)*dt
+            DFx[1,2] = lin_vel*np.cos(th)*dt
+        else:
+            DFx[0,2] = R*(-np.cos(th)+np.cos(th+ang_vel*dt))
+            DFx[1,2] = R*(-np.sin(th)+np.sin(th+ang_vel*dt))
         
         return DFx
 
@@ -140,12 +137,12 @@ class Robot:
         if ang_vel == 0:
             Jac2[0,0] = np.cos(th) * dt
             Jac2[1,0] = np.sin(th) * dt
-            Jac2[2,1] = dt
+            Jac2[2,1] = 0
         else:
             Jac2[0,0] = (-np.sin(th)+np.sin(th2))/ang_vel
-            Jac2[0,1] = -(lin_vel/(ang_vel*ang_vel))*(-np.sin(th)+np.sin(th2))
+            Jac2[0,1] = dt * (np.cos(th2) * (lin_vel/ang_vel)) - (np.sin(th2)-np.sin(th)) * (lin_vel/(ang_vel*ang_vel))
             Jac2[1,0] = np.cos(th2)/ang_vel
-            Jac2[1,1] = -(lin_vel/(ang_vel*ang_vel))*(np.cos(th)-np.cos(th2))
+            Jac2[1,1] = (lin_vel/(ang_vel*ang_vel)) * (np.cos(th2) + dt*ang_vel*np.sin(th2) - np.cos(th))
             Jac2[2,1] = dt
             
 

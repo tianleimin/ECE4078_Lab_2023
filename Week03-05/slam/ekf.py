@@ -93,13 +93,16 @@ class EKF:
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO: add your codes here to compute the predicted x ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         #Apply Dynamics
-        x_dynamics = np.zeros((3,1))
-        x_dynamics = np.dot(F,x)
+        # x_dynamics = np.zeros((3,1))
+        # x_dynamics = np.dot(F,x)
+
+        # self.set_state_vector(x_dynamics)
 
         #Uncertainty Estimate
         Q = self.predict_covariance(raw_drive_meas)
         sigma_K_bar = (F @ self.P @ F.T) + Q
-        return sigma_K_bar
+        self.P = sigma_K_bar
+        return 
         
     # the update step of EKF
     def update(self, measurements):
@@ -124,9 +127,18 @@ class EKF:
         x = self.get_state_vector()
 
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO: add your codes here to compute the updated x ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        x_pos = x[0]
-        x_vel = x[1]
-        x_accel = x[2]
+
+        #Kalman Gain
+        S = (H @ self.P @ H.T) + R
+        K = self.P @ H.T @ np.linalg.inv(S)
+
+        x_update = x + (K @ (z - z_hat))
+
+        P_update = (np.eye(self.P.shape[0]) - (K @ H)) @ self.P
+
+        self.P = P_update
+        self.set_state_vector(x_update)
+        return
 
     def state_transition(self, raw_drive_meas):
         n = self.number_landmarks()*2 + 3
