@@ -91,13 +91,15 @@ class EKF:
         x = self.get_state_vector()
 
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO: add your codes here to compute the predicted x ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+        #print(f"F is {F}")
         #Apply Dynamics
-        # x_dynamics = np.zeros((3,1))
-        # x_dynamics = np.dot(F,x)
-
-        # self.set_state_vector(x_dynamics)
-
+        '''
+        x_dynamics = np.zeros((3,1))
+        x_dynamics = np.dot(F,x)
+        print(f"x_dynamics is {x_dynamics}")
+        self.set_state_vector(x_dynamics)
+        '''
+        self.robot.drive(raw_drive_meas)
         #Uncertainty Estimate
         Q = self.predict_covariance(raw_drive_meas)
         sigma_K_bar = (F @ self.P @ F.T) + Q
