@@ -2,7 +2,7 @@
 import numpy as np
 import os
 import sys
-sys.path.insert(0, r"C:\Users\kiran\OneDrive - Monash University\Units\2023\ECE4078\Project\ECE4078_Lab_2023\Week01-02\util")
+sys.path.insert(0, r"C:\Users\thinu\Documents\ECE5178_IntelligentRobotics\Labs\M2\ECE4078_Lab_2023-main_M2\ECE4078_Lab_2023-main\Week03-05\util")
 from pibot import PenguinPi
 
 
@@ -43,8 +43,8 @@ def calibrateWheelRadius():
     num = len(wheel_velocities_range)
     scale = 0
     for delta_time, wheel_vel in zip(delta_times, wheel_velocities_range):
-        # TODO: replace with your code to compute the scale parameter using wheel_vel and delta_time
-        scale += 1/(wheel_vel*delta_time)
+        scale += 1/(wheel_vel * delta_time)
+       # pass # TODO: replace with your code to compute the scale parameter using wheel_vel and delta_time
     scale = scale/num
     print("The scale parameter is estimated as {:.6f} m/ticks.".format(scale))
 
@@ -88,7 +88,9 @@ def calibrateBaseline(scale):
     num = len(wheel_velocities_range)
     baseline = 0
     for delta_time, wheel_vel in zip(delta_times, wheel_velocities_range):
-        baseline += scale*delta_time*2*wheel_vel/(2*np.pi) # TODO: replace with your code to compute the baseline parameter using scale, wheel_vel, and delta_time
+        #pass # TODO: replace with your code to compute the baseline parameter using scale, wheel_vel, and delta_time
+        baseline += scale * delta_time * 2 * wheel_vel / (2*np.pi)
+    baseline = baseline/num
     print("The baseline parameter is estimated as {:.6f} m.".format(baseline))
 
     return baseline

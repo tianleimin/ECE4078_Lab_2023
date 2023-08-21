@@ -20,7 +20,7 @@ You will use your M1 (teleoperation) code to drive your robot around this unknow
 
 **You'll need to install additional python packages** for M2 by typing the following commands in the terminal (remember to activate your venv first by typing ```PenguinPi\Scripts\activate```):
 ```
-python -m pip install machinevision-toolbox-python spatialmath-python==0.8.9 opencv-contrib-python==4.4.0.46 matplotlib
+python3 -m pip install machinevision-toolbox-python spatialmath-python==0.8.9 opencv-contrib-python==4.1.2.30 matplotlib
 ```
 
 If you are using the Linux env (sim + physical robot), after installing the python packages, run the following commands to update your catkin_ws
@@ -68,7 +68,7 @@ Prior to working on this week's materials, please make sure you do the following
 - Replace the [keyboard control section](operate.py#L200) in operate.py with the code you developed for M1
 
 #### Step 2) Wheel calibration
-Completed [wheel_calibration.py](calibration/wheel_calibration.py) by filling in the required lines of code (computing the [scale parameter](calibration/wheel_calibration.py#L46) and the [baseline parameter](calibration/wheel_calibration.py#L89)), run the [wheel calibration script](calibration/wheel_calibration.py) using the command ```python wheel_calibration.py --ip 192.168.50.1 --port 8080```. This script will set the robot driving forward, and then spinning at various velocities, for durations that you specify, in order to compute the scale and baseline parameters for wheel calibration.
+Completed [wheel_calibration.py](calibration/wheel_calibration.py) by filling in the required lines of code (computing the [scale parameter](calibration/wheel_calibration.py#L46) and the [baseline parameter](calibration/wheel_calibration.py#L89)), run the [wheel calibration script](calibration/wheel_calibration.py) using the command ```python3 wheel_calibration.py --ip 192.168.50.1 --port 8080```. This script will set the robot driving forward, and then spinning at various velocities, for durations that you specify, in order to compute the scale and baseline parameters for wheel calibration.
 
 You can mark a 1m long straight line with masking tape on the floor, and use it as a guide to check if the robot has travelled exactly (as close as possible) 1m. Masking tape and measuring tape will be provided to you in the lab. 
 
@@ -138,8 +138,3 @@ Please see [M2 marking instructions](M2_marking_instructions.md)
 - Beware of the sign error that can happen with calculating the difference between the measurement and estimate in the correction step
 - The state vector x will be appended with the aruco marker measurements. Take a note of the location of x that should be updated in the motion model.
 - In the prediction step, we should update the mean belief by driving the robot.
-- [NEW] If you encounter error while trying to install ```opencv-contrib-python==4.1.2.30```, install the newest version of opencv-contrib-python by not specifying the version.
-- [NEW] If you cannot run ```from machinevisiontoolbox import Image, CentralCamera``` due to spatialmath error, uninstall the current version of spatialmath-python and re-install with the newest one.
-- [NEW] [calib_pic.py](calibration/calib_pic.py) and [camera_calibration.py](calibration/camera_calibration.py) have been updated to work with the 2 changes above and the newest version of machine vision toolbox, please check if you have the correct code.
-- [NEW] If you are using an older version of the machinevisiontoolbox, you can use the previous camera calibration script [camera_calibration_old.py](calibration/camera_calibration_old.py), or update your MVT by reinstalling it
-- [NEW] If you are using an older version of OpenCV (using the VM image or installing with the version flag), please use the previous aruco detector script [aruco_detector_old.py](slam/aruco_detector_old.py). If you are using the new version of OpenCV (installing without a specified version flag), please update your aruco detector script [aruco_detector.py](slam/aruco_detector.py) (Line 15 and 16 have been changed compared to the old script)

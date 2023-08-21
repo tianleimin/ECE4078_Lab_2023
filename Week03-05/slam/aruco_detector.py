@@ -12,8 +12,8 @@ class aruco_detector:
         self.distortion_params = robot.camera_dist
 
         self.marker_length = marker_length
-        self.aruco_params = cv2.aruco.DetectorParameters() # updated to work with newer OpenCV
-        self.aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_100) # updated to work with newer OpenCV
+        self.aruco_params = cv2.aruco.DetectorParameters_create()
+        self.aruco_dict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_100)
     
     def detect_marker_positions(self, img):
         # Perform detection

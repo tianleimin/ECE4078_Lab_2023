@@ -32,7 +32,7 @@ class EKF:
         self.pibot_pic = pygame.image.load(f'./pics/8bit/pibot_top.png')
         
     def reset(self):
-        self.robot.state = np.zeros((3, 1))
+        self.robot.state = np.zeros((3, 1)) #State Vector
         self.markers = np.zeros((2,0))
         self.taglist = []
         # Covariance matrix
@@ -87,11 +87,20 @@ class EKF:
     # the prediction step of EKF
     def predict(self, raw_drive_meas):
 
-        F = self.state_transition(raw_drive_meas)
+        F = self.state_transition(raw_drive_meas) #Jacobian
         x = self.get_state_vector()
 
-        # TODO: add your codes here to compute the predicted x
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO: add your codes here to compute the predicted x ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+        #Apply Dynamics
+        x_dynamics = np.zeros((3,1))
+        x_dynamics = np.dot(F,x)
+
+        #Uncertainty Estimate
+        Q = self.predict_covariance(raw_drive_meas)
+        sigma_K_bar = (F @ self.P @ F.T) + Q
+        return sigma_K_bar
+        
     # the update step of EKF
     def update(self, measurements):
         if not measurements:
@@ -114,8 +123,10 @@ class EKF:
 
         x = self.get_state_vector()
 
-        # TODO: add your codes here to compute the updated x
-
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO: add your codes here to compute the updated x ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        x_pos = x[0]
+        x_vel = x[1]
+        x_accel = x[2]
 
     def state_transition(self, raw_drive_meas):
         n = self.number_landmarks()*2 + 3

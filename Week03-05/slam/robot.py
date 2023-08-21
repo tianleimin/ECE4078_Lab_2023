@@ -23,7 +23,7 @@ class Robot:
         # Apply the velocities
         dt = drive_meas.dt
         if angular_velocity == 0:
-            self.state[0] += np.cos(self.state[2]) * linear_velocity * dt # self.state is a prediction about the position of our robot
+            self.state[0] += np.cos(self.state[2]) * linear_velocity * dt
             self.state[1] += np.sin(self.state[2]) * linear_velocity * dt
         else:
             th = self.state[2]
@@ -36,20 +36,18 @@ class Robot:
         # The index list tells the function which landmarks to measure in order.
         
         # Construct a 2x2 rotation matrix from the robot angle
-        th = self.state[2] # our orientation angle
+        th = self.state[2]
         Rot_theta = np.block([[np.cos(th), -np.sin(th)],[np.sin(th), np.cos(th)]])
         robot_xy = self.state[0:2,:]
 
         measurements = []
         for idx in idx_list:
             marker = markers[:,idx:idx+1]
-            marker_bff = Rot_theta.T @ (marker - robot_xy)  # transpose of rot_theta and then multiplying by the vector to the marker. 
-            # represents the position or coordinates of a marker in a robot's body-fixed frame (BFF). In robotics, a body-fixed frame is a coordinate frame that is attached to and moves with the robot itself.
-            # marker - robot_xy) gets the direction vector from the origin. Fixed frame
-            measurements.append(marker_bff) # marker_bff gives the pure coords of the marker
+            marker_bff = Rot_theta.T @ (marker - robot_xy)
+            measurements.append(marker_bff)
 
         # Stack the measurements in a 2xm structure.
-        markers_bff = np.concatenate(measurements, axis=1) # puts all coords into a vector
+        markers_bff = np.concatenate(measurements, axis=1)
         return markers_bff
     
     def convert_wheel_speeds(self, left_speed, right_speed):
@@ -67,8 +65,8 @@ class Robot:
     # --------------------------
 
     def derivative_drive(self, drive_meas):
-        # Compute the differential of drive with reference to the robot state
-        DFx = np.zeros((3,3)) #this is our Jacobian
+        # Compute the differential of drive w.r.t. the robot state
+        DFx = np.zeros((3,3))
         DFx[0,0] = 1
         DFx[1,1] = 1
         DFx[2,2] = 1
@@ -76,9 +74,21 @@ class Robot:
         lin_vel, ang_vel = self.convert_wheel_speeds(drive_meas.left_speed, drive_meas.right_speed)
 
         dt = drive_meas.dt
-        th = self.state[2] # thete, our angle of robot compared to a fixed axis
+        th = self.state[2]
         
-        # TODO: add your codes here to compute DFx using lin_vel, ang_vel, dt, and th
+        # ~~~~~~~~~~~~~~~~~~~~~ TODO: add your codes here to compute DFx using lin_vel, ang_vel, dt, and th ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        dydx = lin_vel*np.sin(th) * (1/(lin_vel*np.cos(th)))
+        dxdtheta = lin_vel*np.cos(th) * (1/ang_vel)
+        dydtheta = lin_vel*np.sin(th) * (1/ang_vel)
+
+        DFx[0,1] = 1/dydx
+        DFx[1,0] = dydx
+
+        DFx[0,2] = dxdtheta
+        DFx[2,0] = 1/dxdtheta
+
+        DFx[1,2] = dydtheta
+        DFx[2,1] = 1/dydtheta
         
         return DFx
 
@@ -119,14 +129,25 @@ class Robot:
                 [-self.wheels_scale/self.wheels_width, self.wheels_scale/self.wheels_width]])
         
         lin_vel, ang_vel = self.convert_wheel_speeds(drive_meas.left_speed, drive_meas.right_speed)
-        th = self.state[2]
+        th = self.state[2] #Prev Angle
         dt = drive_meas.dt
-        th2 = th + dt*ang_vel
+        th2 = th + dt*ang_vel #Current Angle
 
         # Derivative of x,y,theta w.r.t. lin_vel, ang_vel
         Jac2 = np.zeros((3,2))
         
-        # TODO: add your codes here to compute Jac2 using lin_vel, ang_vel, dt, th, and th2
+        # ~~~~~~~~~~~~~~~~~~ TODO: add your codes here to compute Jac2 using lin_vel, ang_vel, dt, th, and th2 ~~~~~~~~~~~~~~~~~~~~
+        if ang_vel == 0:
+            Jac2[0,0] = np.cos(th) * dt
+            Jac2[1,0] = np.sin(th) * dt
+            Jac2[2,1] = dt
+        else:
+            Jac2[0,0] = (-np.sin(th)+np.sin(th2))/ang_vel
+            Jac2[0,1] = -(lin_vel/(ang_vel*ang_vel))*(-np.sin(th)+np.sin(th2))
+            Jac2[1,0] = np.cos(th2)/ang_vel
+            Jac2[1,1] = -(lin_vel/(ang_vel*ang_vel))*(np.cos(th)-np.cos(th2))
+            Jac2[2,1] = dt
+            
 
         # Derivative of x,y,theta w.r.t. left_speed, right_speed
         Jac = Jac2 @ Jac1

@@ -197,27 +197,19 @@ class Operate:
     # keyboard teleoperation        
     def update_keyboard(self):
         for event in pygame.event.get():
-            ############### add your codes below ###############
+            ########### replace with your M1 codes ###########
             # drive forward
             if event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
-                self.pibot.set_velocity([1,0], 100, 50, 1) # TODO: replace with your code to make the robot drive forward
-
-
+                self.command['motion'] = [5, 0]
             # drive backward
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
-                self.pibot.set_velocity([-1,0], 100, 50, 1) # TODO: replace with your code to make the robot drive backward
-
-
+                self.command['motion'] = [-5, 0]
             # turn left
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
-                self.pibot.set_velocity([0,1], 100, 50, 1) # TODO: replace with your code to make the robot turn left
-
-
+                self.command['motion'] = [0, 5]
             # drive right
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
-                self.pibot.set_velocity([0,-1], 100, 50, 1) # TODO: replace with your code to make the robot turn right
-
-                    
+                self.command['motion'] = [0, -5]
             ####################################################
             # stop
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
