@@ -98,10 +98,11 @@ class EKF:
         x_dynamics = np.dot(F,x)
         print(f"x_dynamics is {x_dynamics}")
         self.set_state_vector(x_dynamics)
-        '''
+        '''   
         self.robot.drive(raw_drive_meas)
         #Uncertainty Estimate
         Q = self.predict_covariance(raw_drive_meas)
+        # could we scale Q based on the steering angle? 1 + abs(Left wheel - right wheel)/(2*left speed + 2*right speed)
         sigma_K_bar = (F @ self.P @ F.T) + Q
         self.P = sigma_K_bar
         return 
@@ -119,7 +120,8 @@ class EKF:
         z = np.concatenate([lm.position.reshape(-1,1) for lm in measurements], axis=0)
         R = np.zeros((2*len(measurements),2*len(measurements)))
         for i in range(len(measurements)):
-            R[2*i:2*i+2,2*i:2*i+2] = measurements[i].covariance
+            scale = 1 - (1.3 - np.sqrt(np.sum(measurements[i].position**2)))/4.24
+            R[2*i:2*i+2,2*i:2*i+2] = scale*measurements[i].covariance
 
         # Compute own measurements
         z_hat = self.robot.measure(self.markers, idx_list)
@@ -131,6 +133,10 @@ class EKF:
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO: add your codes here to compute the updated x ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         #Kalman Gain
+        
+        # Maybe we want a scalar for the covariance of the measurement noise, low at the start and then increasing as time goes on
+        # 
+        
         S = (H @ self.P @ H.T) + R
         K = self.P @ H.T @ np.linalg.inv(S)
 

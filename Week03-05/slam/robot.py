@@ -141,7 +141,7 @@ class Robot:
         else:
             Jac2[0,0] = (-np.sin(th)+np.sin(th2))/ang_vel
             Jac2[0,1] = dt * (np.cos(th2) * (lin_vel/ang_vel)) - (np.sin(th2)-np.sin(th)) * (lin_vel/(ang_vel*ang_vel))
-            Jac2[1,0] = np.cos(th2)/ang_vel
+            Jac2[1,0] = (np.cos(th) - np.cos(th2))/ang_vel
             Jac2[1,1] = (lin_vel/(ang_vel*ang_vel)) * (np.cos(th2) + dt*ang_vel*np.sin(th2) - np.cos(th))
             Jac2[2,1] = dt
             
