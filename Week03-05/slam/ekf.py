@@ -120,7 +120,7 @@ class EKF:
 
         # Stack measurements and set covariance
         z = np.concatenate([lm.position.reshape(-1,1) for lm in measurements], axis=0)
-        z += np.sign(z)*0.04
+        z +=  np.transpose(np.array([0.02, 0])) @ np.sign(z)
             
         #z[i][1] += np.sign(z[i][1])*0.04
 
@@ -193,9 +193,9 @@ class EKF:
             self.P = np.concatenate((self.P, np.zeros((self.P.shape[0], 2))), axis=1)
             self.P[-2,-2] = self.init_lm_cov**2
             self.P[-1,-1] = self.init_lm_cov**2
-            # if len(self.taglist) == 1:
-            #     self.P[-2,-2] = 0.01
-            #     self.P[-1,-1] = 0.01
+            if len(self.taglist) == 1:
+                self.P[-2,-2] = 0.02
+                self.P[-1,-1] = 0.02
 
     ##########################################
     ##########################################
