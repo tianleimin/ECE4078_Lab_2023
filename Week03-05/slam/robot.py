@@ -74,7 +74,7 @@ class Robot:
 
         lin_vel, ang_vel = self.convert_wheel_speeds(drive_meas.left_speed, drive_meas.right_speed)
 
-        R = lin_vel/ang_vel
+        
 
         dt = drive_meas.dt
         th = self.state[2]
@@ -84,6 +84,7 @@ class Robot:
             DFx[0,2] = -lin_vel*np.sin(th)*dt
             DFx[1,2] = lin_vel*np.cos(th)*dt
         else:
+            R = lin_vel/ang_vel
             DFx[0,2] = R*(-np.cos(th)+np.cos(th+ang_vel*dt))
             DFx[1,2] = R*(-np.sin(th)+np.sin(th+ang_vel*dt))
         
@@ -137,9 +138,9 @@ class Robot:
         if ang_vel == 0:
             Jac2[0,0] = np.cos(th) * dt
             Jac2[1,0] = np.sin(th) * dt
-            Jac2[2,1] = 0
+            #Jac2[2,1] = 0
         else:
-            Jac2[0,0] = (-np.sin(th)+np.sin(th2))/ang_vel
+            Jac2[0,0] = (-np.sin(th) + np.sin(th2))/ang_vel
             Jac2[0,1] = dt * (np.cos(th2) * (lin_vel/ang_vel)) - (np.sin(th2)-np.sin(th)) * (lin_vel/(ang_vel*ang_vel))
             Jac2[1,0] = (np.cos(th) - np.cos(th2))/ang_vel
             Jac2[1,1] = (lin_vel/(ang_vel*ang_vel)) * (np.cos(th2) + dt*ang_vel*np.sin(th2) - np.cos(th))

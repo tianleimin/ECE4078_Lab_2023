@@ -99,6 +99,8 @@ class EKF:
         print(f"x_dynamics is {x_dynamics}")
         self.set_state_vector(x_dynamics)
         '''   
+        
+
         self.robot.drive(raw_drive_meas)
         #Uncertainty Estimate
         Q = self.predict_covariance(raw_drive_meas)
@@ -118,9 +120,15 @@ class EKF:
 
         # Stack measurements and set covariance
         z = np.concatenate([lm.position.reshape(-1,1) for lm in measurements], axis=0)
+        z += np.sign(z)*0.04
+            
+        #z[i][1] += np.sign(z[i][1])*0.04
+
         R = np.zeros((2*len(measurements),2*len(measurements)))
         for i in range(len(measurements)):
-            scale = 1 - (1.3 - np.sqrt(np.sum(measurements[i].position**2)))/4.24
+            scale = 1 - (1.1 - np.sqrt(np.sum(measurements[i].position**2)))/10
+            #
+            # print(measurements[i].position)
             R[2*i:2*i+2,2*i:2*i+2] = scale*measurements[i].covariance
 
         # Compute own measurements
@@ -185,6 +193,9 @@ class EKF:
             self.P = np.concatenate((self.P, np.zeros((self.P.shape[0], 2))), axis=1)
             self.P[-2,-2] = self.init_lm_cov**2
             self.P[-1,-1] = self.init_lm_cov**2
+            # if len(self.taglist) == 1:
+            #     self.P[-2,-2] = 0.01
+            #     self.P[-1,-1] = 0.01
 
     ##########################################
     ##########################################

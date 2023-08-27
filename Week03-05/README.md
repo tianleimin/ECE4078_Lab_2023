@@ -20,7 +20,7 @@ You will use your M1 (teleoperation) code to drive your robot around this unknow
 
 **You'll need to install additional python packages** for M2 by typing the following commands in the terminal (remember to activate your venv first by typing ```PenguinPi\Scripts\activate```):
 ```
-python3 -m pip install machinevision-toolbox-python spatialmath-python==0.8.9 opencv-contrib-python==4.1.2.30 matplotlib
+python3 -m pip install machinevision-toolbox-python spatialmath-python==0.8.9 opencv-contrib-python matplotlib
 ```
 
 If you are using the Linux env (sim + physical robot), after installing the python packages, run the following commands to update your catkin_ws
@@ -73,11 +73,11 @@ Completed [wheel_calibration.py](calibration/wheel_calibration.py) by filling in
 You can mark a 1m long straight line with masking tape on the floor, and use it as a guide to check if the robot has travelled exactly (as close as possible) 1m. Masking tape and measuring tape will be provided to you in the lab. 
 
 #### Step 3) Camera calibration
-Complete [calib_pic.py](calibration/calib_pic.py) using your M1 teleoperation codes and run the completed script using ```python3 calib_pic.py --ip 192.168.50.1 --port 8080```, then press ENTER to take a calibration photo (It will be saved as [calib_0.png](calibration/calib_0.png)). You have to drive the robot fairly close to the calibration rig to get a good view of the 8 dots. The photo should look something like this:
+Complete [calib_pic.py](calibration/calib_pic.py) using your M1 teleoperation codes and run the completed script using ```python calib_pic.py --ip 192.168.50.1 --port 8080```, then press ENTER to take a calibration photo (It will be saved as [calib_0.png](calibration/calib_0.png)). You have to drive the robot fairly close to the calibration rig to get a good view of the 8 dots. The photo should look something like this:
 
 ![Real calibration photo](screenshots/RealCameraCalib.png?raw=true "Real calibration photo")
 
-Once you have taken the [calib_0.png](calibration/calib_0.png) photo with the physical robot, run ```python3 camera_calibration.py``` to perform camera calibration. This opens the calibration photo you just took. Selecting the 8 key points in the calibration photo following the ordering shown in [calibration-fixture.png](diy_prints/calibration-fixture.png) by left clicking on each point (right click to cancel a selected point). Once all 8 points are selected, close the figure window to compute the camera matrix. This will update the [intrinsic parameters](calibration/param/intrinsic.txt). Note: keep the [distortion coefficients](calibration/param/distCoeffs.txt) to all 0s.
+Once you have taken the [calib_0.png](calibration/calib_0.png) photo with the physical robot, run ```python camera_calibration.py``` to perform camera calibration. This opens the calibration photo you just took. Selecting the 8 key points in the calibration photo following the ordering shown in [calibration-fixture.png](diy_prints/calibration-fixture.png) by left clicking on each point (right click to cancel a selected point). Once all 8 points are selected, close the figure window to compute the camera matrix. This will update the [intrinsic parameters](calibration/param/intrinsic.txt). Note: keep the [distortion coefficients](calibration/param/distCoeffs.txt) to all 0s.
 
 ![Calibration fixture](diy_prints/calibration-fixture.png?raw=true "Calibration fixture")
 
@@ -91,7 +91,7 @@ Note: You can make your own calibration rig for development outside of the labs 
 
 **Please complete [robot.py](slam/robot.py) by filling in the computation of the [derivatives](slam/robot.py#L79) and [covariance](slam/robot.py#L127) of the motion model. Please also complete [ekf.py](slam/ekf.py) by filling in the computation of the [predicted robot state](slam/ekf.py#L93) and the [updated robot state](slam/ekf.py#L117) to finish the extended Kalman filter function.**
 
-Once robot.py and ekf.py are completed, you can test the performance of your SLAM by running ```python3 operate.py --ip 192.168.50.1 --port 8080```
+Once robot.py and ekf.py are completed, you can test the performance of your SLAM by running ```python operate.py --ip 192.168.50.1 --port 8080```
 
 Below are examples of what the GUI running SLAM looks like on physical robot and in sim:
 
@@ -104,7 +104,7 @@ An evaluation script [SLAM_eval.py](SLAM_eval.py) is provided for evaluating the
 
 A [development map](TrueMap.txt) is provided which you can use for setting up the physical/simulator arena and for evaluation. It is the same as "map1.txt" provided when you were setting up the simulator env in [week 1](../Robot_simulator/InstallationGuideSim.md).
 
-Run ```python3 SLAM_eval.py TrueMap.txt lab_output/slam.txt``` and you should see a printout of the evaluation results:
+Run ```python SLAM_eval.py TrueMap.txt lab_output/slam.txt``` and you should see a printout of the evaluation results:
  
 ![Example output of SLAM evaluation script](screenshots/SLAM_eval_output.png?raw=true "Example output of SLAM evaluation script")
 

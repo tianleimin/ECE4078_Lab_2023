@@ -18,7 +18,7 @@ class PenguinPi:
     # tick = forward speed
     # turning_tick = turning speed
     ########################################## 
-    def set_velocity(self, command, tick=50, turning_tick=20, time=0):
+    def set_velocity(self, command, tick=30, turning_tick=15, time=0):
         # running in sim
         if self.ip == 'localhost': 
             l_vel = command[0]*tick - command[1]*turning_tick

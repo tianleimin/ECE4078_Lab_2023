@@ -201,55 +201,56 @@ class Operate:
             # drive forward
             SPEED = 1
             TURN = 1
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
-                self.command['motion'] = [SPEED, 0]
-            # drive backward
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
-                self.command['motion'] = [-SPEED, 0]
-            # turn left
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
-                self.command['motion'] = [0, TURN]
-            # drive right
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
-                self.command['motion'] = [0, -TURN]
-            ####################################################
-            # stop
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                self.command['motion'] = [0, 0]
-            # save image
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_i:
-                self.command['save_image'] = True
-            # save SLAM map
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_s:
-                self.command['output'] = True
-            # reset SLAM map
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_r:
-                if self.double_reset_comfirm == 0:
-                    self.notification = 'Press again to confirm CLEAR MAP'
-                    self.double_reset_comfirm +=1
-                elif self.double_reset_comfirm == 1:
-                    self.notification = 'SLAM Map is cleared'
-                    self.double_reset_comfirm = 0
-                    self.ekf.reset()
-            # run SLAM
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
-                n_observed_markers = len(self.ekf.taglist)
-                if n_observed_markers == 0:
-                    if not self.ekf_on:
-                        self.notification = 'SLAM is running'
-                        self.ekf_on = True
-                    else:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    self.command['motion'] = [SPEED, 0]
+                # drive backward
+                elif event.key == pygame.K_DOWN:
+                    self.command['motion'] = [-SPEED, 0]
+                # turn left
+                elif event.key == pygame.K_LEFT:
+                    self.command['motion'] = [0, TURN]
+                # drive right
+                elif event.key == pygame.K_RIGHT:
+                    self.command['motion'] = [0, -TURN]
+                ####################################################
+                # stop
+                elif event.key == pygame.K_SPACE:
+                    self.command['motion'] = [0, 0]
+                # save image
+                elif event.key == pygame.K_i:
+                    self.command['save_image'] = True
+                # save SLAM map
+                elif event.key == pygame.K_s:
+                    self.command['output'] = True
+                # reset SLAM map
+                elif event.key == pygame.K_r:
+                    if self.double_reset_comfirm == 0:
+                        self.notification = 'Press again to confirm CLEAR MAP'
+                        self.double_reset_comfirm +=1
+                    elif self.double_reset_comfirm == 1:
+                        self.notification = 'SLAM Map is cleared'
+                        self.double_reset_comfirm = 0
+                        self.ekf.reset()
+                # run SLAM
+                elif event.key == pygame.K_RETURN:
+                    n_observed_markers = len(self.ekf.taglist)
+                    if n_observed_markers == 0:
+                        if not self.ekf_on:
+                            self.notification = 'SLAM is running'
+                            self.ekf_on = True
+                        else:
+                            self.notification = '> 2 landmarks is required for pausing'
+                    elif n_observed_markers < 3:
                         self.notification = '> 2 landmarks is required for pausing'
-                elif n_observed_markers < 3:
-                    self.notification = '> 2 landmarks is required for pausing'
-                else:
-                    if not self.ekf_on:
-                        self.request_recover_robot = True
-                    self.ekf_on = not self.ekf_on
-                    if self.ekf_on:
-                        self.notification = 'SLAM is running'
                     else:
-                        self.notification = 'SLAM is paused'
+                        if not self.ekf_on:
+                            self.request_recover_robot = True
+                        self.ekf_on = not self.ekf_on
+                        if self.ekf_on:
+                            self.notification = 'SLAM is running'
+                        else:
+                            self.notification = 'SLAM is paused'
             # quit
             elif event.type == pygame.QUIT:
                 self.quit = True
