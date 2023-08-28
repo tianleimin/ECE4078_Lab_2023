@@ -90,6 +90,7 @@ class EKF:
         F = self.state_transition(raw_drive_meas) #Jacobian
         x = self.get_state_vector()
 
+
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TODO: add your codes here to compute the predicted x ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         #print(f"F is {F}")
         #Apply Dynamics
@@ -100,6 +101,7 @@ class EKF:
         self.set_state_vector(x_dynamics)
         '''   
         
+
 
         self.robot.drive(raw_drive_meas)
         #Uncertainty Estimate
