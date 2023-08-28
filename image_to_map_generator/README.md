@@ -10,10 +10,17 @@ custom maps.
 you are caught using this code to generate your ground truth maps for during any milestone marking.
 
 ## Usage
+### Python version
+This code has only been validated in later versions of python (3.9/10) onwards, so it will likely not work on the Ubuntu 18.04 which uses Python 3.6.9
+
 ### Install dependencies
 All the dependencies are specified in [requirements.txt](requirements.txt). You may use this command to install the required dependencies:
 ```bash
-pip3 install -r requirements.txt
+python -m pip install -r requirements.txt
+```
+or
+```bash
+python3 -m pip install -r requirements.txt
 ```
 
 ### Configure the parameters
