@@ -11,11 +11,14 @@ reference_map: example_reference_map.txt
 
 # fruits - list of fruits to be placed in the arena and their colours
 fruits:
-  lemon: [0, 221, 255]  # BGR
-  orange: [0, 140, 255]
-  apple: [20, 20, 200]
-  pear: [20, 120, 20]
-  strawberry: [140, 40, 40]
+  lemon: [86, 255, 255]  # BGR
+  orange: [0, 127, 255]
+  tomato: [0, 0, 191]
+  lime: [0, 255, 0]
+  garlic: [255, 255, 255]
+  capsicum: [0, 191, 191]
+  potato: [0, 63, 127]
+  pumpkin: [0, 84, 255]
 
 # change this if the GUI is too big for your screen
 image_display_res:
