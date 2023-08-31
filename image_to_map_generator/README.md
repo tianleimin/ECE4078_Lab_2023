@@ -25,6 +25,7 @@ or
 python3 -m pip map_generator
 ```
 Depending on which installation of python you have installed on your system. You can then activate this environment with:
+
 (On Windows)
 ```bash
 map_generator\Scripts\activate
