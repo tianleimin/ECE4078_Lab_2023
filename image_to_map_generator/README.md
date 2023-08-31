@@ -11,7 +11,29 @@ you are caught using this code to generate your ground truth maps for during any
 
 ## Usage
 ### Python version
-This code has only been validated in later versions of python (3.9/10) onwards, so it will likely not work on the Ubuntu 18.04 which uses Python 3.6.9
+This code has only been validated in later versions of python (3.9/10) onwards, so it will likely not work on the Ubuntu 18.04 which uses Python 3.6.9.
+
+## Python Package Version differences
+There are potentially package version clashes between the PenguinPi robot code and this Image-to-Map Generator, as a result we recommend you install the packages for this code in a separate python virtual environment.
+
+This can be done with:
+```bash
+python -m venv map_generator
+```
+or
+```bash
+python3 -m pip map_generator
+```
+Depending on which installation of python you have installed on your system. You can then activate this environment with:
+(On Windows)
+```bash
+map_generator\Scripts\activate
+```
+(On Mac or Linux)
+```bash
+source ./map_generator/bin/activate
+```
+From here you will install dependencies below.
 
 ### Install dependencies
 All the dependencies are specified in [requirements.txt](requirements.txt). You may use this command to install the required dependencies:
@@ -22,6 +44,7 @@ or
 ```bash
 python3 -m pip install -r requirements.txt
 ```
+Depending on which installation of python you have installed on your system.
 
 ### Configure the parameters
 Change the parameters in [config.yaml](config.yaml) before running the code.
