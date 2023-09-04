@@ -35,6 +35,7 @@ Keyboard commands related to running M3 (```python operate.py --ip 192.168.50.1 
 - press ```i``` to take a picture (for collecting training data, saved under the ```pibot_dataset``` folder, doesn't require a trained YOLO model)
 - press ```p``` to run the trained YOLO object detector (bounding box visualised in bottom left view)
 - press ```n``` to save the robot's current pose estimated by SLAM (appending to "lab_output/image.txt") and the corresponding observation image (as "lab_output/pred_*.png")
+- [EDIT] after running operate.py to gather the set of observations and their matching robot pose, run TargetPoseEst.py in a new terminal to generate targets.txt (map of objects) from these observations.
 
 ---
 ## Supporting scripts
@@ -82,7 +83,7 @@ After you have annotated your dataset, you can use Roboflow to generate a datase
 
 ![roboflow_generate_dataset](Screenshots/roboflow_generate_dataset.png)
 
-We recommend you to resize the image to 320 x 320 pixels, as the output resolution of the PenguinPi camera is 640 x 480 pixels.
+[EDIT] We recommend you to keep the image to same as the output resolution of the PenguinPi camera, i.e., 640 x 480 pixels, or resize to 320 x 240 (half the size but same aspect ratio).
 
 Roboflow also provide option to augment your dataset, which can help improve the robustness of your model.
 Have a think about what augmentations are meaningful for our use case, you may add as many augmentations as you like.
@@ -117,6 +118,7 @@ Run ```python TargetPoseEst.py```, which will read in the observation saved insi
 - You may improve the [estimate_pose function](TargetPoseEst.py#L15) for computing the target pose using the robot's pose, the detector's output, and the target's true dimensions in each image.
 - [EDIT] If your training image is in a different size than the robot's camera size of 640x480 pixels, remember to change [how the x_shift is computed in the estimate_pose_function](TargetPoseEst.py#L54)
 - Replace the [merge_estimation function](TargetPoseEst.py#L69) with your own codes to merge the estimations from multiple observations using filtering or clustering approaches instead of always taking the first estimation of a target type.
+- [EDIT] In the testing arena, the fruits/vegs will be at least 15cm apart, but a fruit/veg may be within 15cm of a marker block.
 - The [TargetPoseEst.py](TargetPoseEst.py) generates an estimation result file as "lab_output/targets.txt", which is then used to be compared against the groundtruth map for computing the target pose estimation errors.
 - **Make sure your modified "TargetPoseEst.py" generates a "targets.txt" file that is in the same format as the [given example output](lab_output/targets.txt)**. Generating the estimation map in a wrong format may resulting in it not being compatible with the evaluation scripts and thus getting 0pt for the [M3 target_est_score](M3_marking.md#evaluation).
 
