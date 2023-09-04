@@ -35,7 +35,7 @@ Keyboard commands related to running M3 (```python operate.py --ip 192.168.50.1 
 - press ```i``` to take a picture (for collecting training data, saved under the ```pibot_dataset``` folder, doesn't require a trained YOLO model)
 - press ```p``` to run the trained YOLO object detector (bounding box visualised in bottom left view)
 - press ```n``` to save the robot's current pose estimated by SLAM (appending to "lab_output/image.txt") and the corresponding observation image (as "lab_output/pred_*.png")
-- [EDIT] after running operate.py to gather the set of observations and their matching robot pose, run TargetPoseEst.py in a new terminal to generate targets.txt (map of objects) from these observations.
+- [EDIT] after running operate.py to gather the set of observations and their matching robot pose and the SLAM map, run TargetPoseEst.py in a new terminal to generate targets.txt (map of objects) from these observations.
 
 ---
 ## Supporting scripts
