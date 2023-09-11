@@ -49,19 +49,27 @@ def estimate_pose(camera_matrix, obj_info, robot_pose):
     # compute pose of the target based on bounding box info, true object height, and robot's pose
     pixel_height = target_box[3]
     pixel_center = target_box[0]
-    distance = true_height/pixel_height * focal_length  # estimated distance between the object and the robot based on height
+    distance = true_height/pixel_height * focal_length  # estimated distance between the robot and the centre of the image plane based on height
     # image size 640x480 pixels, 640/2=320
     x_shift = 320/2 - pixel_center              # x distance between bounding box centre and centreline in camera view
     theta = np.arctan(x_shift/focal_length)     # angle of object relative to the robot
-    horizontal_relative_distance = distance * np.sin(theta)     # relative distance between robot and object on x axis
-    vertical_relative_distance = distance * np.cos(theta)       # relative distance between robot and object on y axis
-    relative_pose = {'y': vertical_relative_distance, 'x': horizontal_relative_distance}    # relative object location
-
     ang = theta + robot_pose[2]     # angle of object in the world frame
+    
+   # relative object location
+    distance_obj = distance/np.cos(theta) # relative distance between robot and object
+    x_relative = distance_obj * np.cos(theta) # relative x pose
+    y_relative = distance_obj * np.sin(theta) # relative y pose
+    relative_pose = {'x': x_relative, 'y': y_relative}
+    #print(f'relative_pose: {relative_pose}')
 
-    # location of object in the world frame
-    target_pose = {'y': (robot_pose[1]+relative_pose['y']*np.sin(ang))[0],
-                   'x': (robot_pose[0]+relative_pose['x']*np.cos(ang))[0]}
+    # location of object in the world frame using rotation matrix
+    delta_x_world = x_relative * np.cos(ang) - y_relative * np.sin(ang)
+    delta_y_world = x_relative * np.sin(ang) + y_relative * np.cos(ang)
+    # add robot pose with delta target pose
+    target_pose = {'y': (robot_pose[1]+delta_y_world)[0],
+                   'x': (robot_pose[0]+delta_x_world)[0]}
+    #print(f'delta_x_world: {delta_x_world}, delta_y_world: {delta_y_world}')
+    #print(f'target_pose: {target_pose}')
 
     return target_pose
 
