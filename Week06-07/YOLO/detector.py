@@ -45,6 +45,7 @@ class Detector:
             y2 = int(xyxy[3])
 
             # draw bounding box
+            #print(f"bbox[0]: {bbox}")
             img_out = cv2.rectangle(img_out, (x1, y1), (x2, y2), self.class_colour[bbox[0]], thickness=2)
 
             # draw class label

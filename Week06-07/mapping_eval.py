@@ -4,8 +4,8 @@ from copy import deepcopy
 
 # list of target fruit and veg types
 TARGET_TYPES = ['orange', 'lemon', 'lime', 'tomato', 'capsicum', 'potato', 'pumpkin', 'garlic']
+#TARGET_TYPES = [target.upper() for target in TARGET_TYPES]
 
-####################################
 # read ground-truth map containing both ARUCO and target poses
 def parse_true_map(fname):
     with open(fname, 'r') as fd:
