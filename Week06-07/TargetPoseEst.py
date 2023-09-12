@@ -50,8 +50,9 @@ def estimate_pose(camera_matrix, obj_info, robot_pose):
     pixel_height = target_box[3]
     pixel_center = target_box[0]
     distance = true_height/pixel_height * focal_length  # estimated distance between the robot and the centre of the image plane based on height
-    # image size 640x480 pixels, 640/2=320
-    x_shift = 320/2 - pixel_center              # x distance between bounding box centre and centreline in camera view
+    # training image size 320x240p
+    image_width = 320 # change this if your training image is in a different size (check details of pred_0.png taken by your robot)
+    x_shift = image_width/2 - pixel_center              # x distance between bounding box centre and centreline in camera view
     theta = np.arctan(x_shift/focal_length)     # angle of object relative to the robot
     ang = theta + robot_pose[2]     # angle of object in the world frame
     
