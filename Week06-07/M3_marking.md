@@ -21,7 +21,9 @@ python mapping_eval.py
 ```
 This computes the Euclidean distance between each target's true location in "true_map.txt" and its closest estimation in "lab_output/targets.txt" (the estimation error). It also generates an estimation on your SLAM's performance as error in SLAM will impact your target pose estimation performance. The SLAM map is used to align the object pose estmation as well.
 
-"targets.txt" should contain the poses of all 10 fruits and vegs in the arena. **Make sure your modified "TargetPoseEst.py" generates a "targets.txt" file that is in the same format as the [given example output](lab_output/targets.txt)**. Generating the estimation map in a wrong format may result in it not being compatible with the evaluation scripts and thus getting 0pt for M3 target_est_score.
+"targets.txt" should contain the poses of all 10 fruits and vegs in the arena. **Make sure your modified "TargetPoseEst.py" generates a "targets.txt" file that is in the same format as the [given example output](lab_output/targets.txt)**. Generating the estimation map in a wrong format may result in it not being compatible with the evaluation scripts and thus getting 0pt for M3 target_est_score. 
+
+[EDIT] Please note that [mapping_eval.py](mapping_eval.py) is case sensitive. All target labels in your generated estimation map should be in lower case as shown in the [example est map](lab_output/targets.txt) and the groundtruth maps we have been posting on Slack, e.g., use "lemon" instead of "Lemon" or "LEMON". If you've made a typo when labelling your YOLO training dataset, please make sure to edit your TargetPoseEst.py so that the printed estimation map is in the correct format.
 
 Your target_est_score is calculated by summing the pose estimate error of all 10 targets, with the error of each target having an upper bound of 1.0 and lower bound of 0.025 
 
