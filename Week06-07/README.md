@@ -83,7 +83,7 @@ After you have annotated your dataset, you can use Roboflow to generate a datase
 
 ![roboflow_generate_dataset](Screenshots/roboflow_generate_dataset.png)
 
-[EDIT] We recommend you to keep the image to same as the output resolution of the PenguinPi camera, i.e., 640 x 480 pixels, or resize to 320 x 240 (half the size but same aspect ratio).
+[EDIT] Please check the aspect ratio of your training images collected by your robot shown in [image properties](lab_output/pred_0.png) and update the [image_width](TargetPoseEst.py#L54) if needed.
 
 Roboflow also provide option to augment your dataset, which can help improve the robustness of your model.
 Have a think about what augmentations are meaningful for our use case, you may add as many augmentations as you like.
