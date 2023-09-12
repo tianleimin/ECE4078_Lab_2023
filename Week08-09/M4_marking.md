@@ -93,6 +93,10 @@ Zip your implementation and submit via the Moodle submission box (include all sc
 - Practise the marking steps (e.g. unzipping your code and running it) to ensure there are no issues during marking.
 - You may update the wheel and camera calibration parameters in the submission at the time of marking. All other scripts in your submission will need to be used as-is.
 
+**[NEW] Important reminders:**
+- The code submission is due **before the start** of your marking lab session (NOT before you run your live demo), e.g., for the Thu 3pm lab session the code submission deadline will be Thu 3pm. You will NOT be allowed to perform the live demo marking if you didn't submit your codes on time, unless a special consideration has been granted. Don't wait until the last minute and cut your submission too close.
+- You will NOT be able to change the codes after submission, except for the calibrated wheel and camera parameters (baselin.txt, scale.txt, intrinsic.txt, distCoeffs.txt). You will NOT be allowed to fix any typos, target label naming errors, generated maps formatting issues, indentation errors, missing files, scripts with wrong names, wrong implementation versions, wrong model weight files etc. in your submission at the time of live demo and will have to **run your downloaded code submission AS IS**.
+
 
 #### Step 2: 
 **Do this BEFORE the demonstrator come to mark your team**
