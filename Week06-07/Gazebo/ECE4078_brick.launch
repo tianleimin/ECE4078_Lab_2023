@@ -1,0 +1,14 @@
+<launch>
+  <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find penguinpi_gazebo)/worlds/ECE4078_brick.world" />
+    <!-- more default parameters can be changed here -->
+  </include>
+
+  <!-- node type="rviz" name="rviz" pkg="rviz" args="-d $(find penguinpi_gazebo)/rviz/default.rviz" -->
+
+  <node pkg="tf" type="static_transform_publisher" name="camera_link" args="0.08 0.0 0.015 0 0 0 /PenguinPi/base_link /camera_link 100" /> 
+
+  <node pkg="penguinpi_gazebo" type="server" name="penguinpi_server" />
+  
+</launch>
