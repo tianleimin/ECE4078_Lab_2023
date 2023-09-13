@@ -36,13 +36,15 @@ We have divided M4 into 3 levels based on the 3 main components which you could 
 	- Your robot has to make a visible attempt to try to navigate to all the target fruits, to at least drive pass them within a 1m radius, even if the robot may not accurately stop within 0.5m of the target. As an example, if your robot only reaches the first fruit and stops there, you will not receive any score for that run.
  	- [NEW] When your robot has stopped moving by itself, you may stop your run, and then your score for that run will be calculated. If you stop the run while the robot is moving, or if you manually stop the robot/script, you will receive zero score for that run. This is to prevent teams from stopping the run when the robot reach a fruit by luck
 
-6. The **entire** robot has to be within 0.5m of the target to be considered as successful
+6. [EDIT] The **entire** robot has to stop for approximately 2 seconds within 0.5m of the target to be considered as a successful navigation to that target
 
 7. If the robot reaches the target in the wrong order, you will receive zero score for that run
 
 8. We will review your code to see if you have implemented appropriate algorithms for the levels you have attempted. To gain credit for level 2 or 3, we must find evidence of path planning, or obstacle detection and avoidance (respectively) in your code. Successfully navigating to targets and/or avoiding collisions at these levels by luck will not grant you those marks by default
 
 9. The best run/attempt will be considered as your M4 score
+
+10. [NEW] If you are performing semi-automatic navigation (Level 1), the waypoints you can provide are x,y coordinates. You can't specify driving instructions, such as distance / time to drive, or turning angles
 
 ### Level 1: Semi-auto navigation using waypoints
 To attempt Level 1, the locations of all the objects in the arena will be given to you in the full groundtruth map. The search order of the target fruits is given in the shopping list.
