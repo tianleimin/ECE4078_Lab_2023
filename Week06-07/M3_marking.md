@@ -5,6 +5,22 @@
 
 ---
 
+## [NEW] M3 second-chance target pose estimation for all teams
+
+Due to bug-fixes in [TargetPoseEst.py](TargetPoseEst.py), as well as confusion reported by teams on the expected estimation map format and how to perform the estimation, we have decided to allow an optional M3 second-chance live demo re-run for **all teams**.
+
+Please see below for detailed instructions regarding this M3 second-chance demo if you opt to do so:
+- Please indicate which re-run option your group is taking in [this Google form](https://forms.gle/wqLoLVqBZt4HXGuVA) **before Monday 18 Sep at 1pm**. Each team should only submit ONE response, and will only be allowed ONE re-run. You will not be allowed to perform a re-run if you didn't answer the Google form.
+- There are two new Moodle submission boxes created for submitting your codes and your generated target est maps of the re-run, named "M3: Target Pose Est re-run codes (2023)" and "M3: Target Pose Est re-run maps (2023)".
+- Please make sure you have pulled the most recent version of [TargetPoseEst.py](TargetPoseEst.py) (with newest commit on 15 Sep). The bug fixes are most likely to impact your target pose estimation performance if your robot made observations of targets that are not at the centre of its view and are far away from the robot.
+- If you opt for the full re-run (Option 1), we will arrange M3 full re-run sessions in new marking arenas during the semester break (25-29 Sep) with appointment slots that you can book. The appointment calendar will be posted in Week 9 and the slots will be arranged based on demand and TA availability. Please note that we will NOT be performing full re-runs during the Week 9 lab sessions so that people can focus their in-session time to develop and test their M4 in practice arenas. You will need to submit your codes to be used for the re-run to Moodle's re-run code submission box **before your appointment**, follow the same procedure as when you performed the target pose estimation task during Week 8, and submit the generated "targets.txt" maps to Moodle's re-run map submission box at the end of the re-run. You will have **15min** in total to perform the full re-run.
+- If you opt for the partial re-run (Option 2), please submit your revised codes to Moodle's re-run code submission box. A TA of your lab session will come to your group during the Week 9 lab and ask you to download the submitted re-run codes, then execute the new target pose estimation codes with the observations you collected in Week 8 (the photos your robot took and the corresponding "images.txt" file specifying the robot's pose when taking those photos), and finally submit the generated "targets.txt" maps to Moodle's re-run map submission box. you will have **5min** in total to perform the partial re-run. The reason that we ask you to submit the codes and perform partial re-run during the session is to prevent teams from making use of the released Week 8 groundtruth maps in the partial re-run. **If you are found to make any use of the Week 8 groundtruth maps in the partial re-run you will receive 0pt for your M3.**
+- Please make sure that the code you submit is the version you intend to perform the re-run with, and will generate the correct targets.txt with the correct format and target names ([mapping_eval.py](mapping_eval.py) is case sensitive and your targets should be named in the same way as in the groundtruth maps). We will not allow code changes during the re-run (e.g., fixing typos) and you'll need to run your submission **as is**.
+- The re-run is for the **target pose estimation task ONLY**. There is no re-run for the detector_score part, you'll inherit the detector_score from your Week 8's M3 live demo. If you opt to perform the re-run, your Week 8 target_est_score will be **replaced** with the results of the re-run, even if the re-run gives worse results.
+- Please familiarise yourself on how to perform the target pose estimation (check the readme for which keyboard controls to use when collecting observations with pairing robot pose while running operate.py) and practice your driving strategies.
+
+---
+
 ## Evaluation
 Your M3 score consists of two parts: the accuracy of your YOLO detector for classifying the type of a target object, and the accuracy of your estimated map containing the location of the 10 targets in the arena.
 
