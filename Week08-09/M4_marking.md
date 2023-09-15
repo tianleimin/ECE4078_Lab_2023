@@ -46,6 +46,8 @@ We have divided M4 into 3 levels based on the 3 main components which you could 
 
 10. [NEW] If you are performing semi-automatic navigation (Level 1), the waypoints you can provide are x,y coordinates. You can't specify driving instructions, such as distance / time to drive, or turning angles
 
+11. [NEW] The robot must start at the origina (0,0,0). You can't teleoperate or manually place the robot next to the first target when starting the navigation.
+
 ### Level 1: Semi-auto navigation using waypoints
 To attempt Level 1, the locations of all the objects in the arena will be given to you in the full groundtruth map. The search order of the target fruits is given in the shopping list.
 
