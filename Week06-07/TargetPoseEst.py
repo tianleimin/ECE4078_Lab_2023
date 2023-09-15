@@ -64,8 +64,8 @@ def estimate_pose(camera_matrix, obj_info, robot_pose):
     #print(f'relative_pose: {relative_pose}')
 
     # location of object in the world frame using rotation matrix
-    delta_x_world = x_relative * np.cos(ang) - y_relative * np.sin(ang)
-    delta_y_world = x_relative * np.sin(ang) + y_relative * np.cos(ang)
+    delta_x_world = x_relative * np.cos(robot_pose[2]) - y_relative * np.sin(robot_pose[2])
+    delta_y_world = x_relative * np.sin(robot_pose[2]) + y_relative * np.cos(robot_pose[2])
     # add robot pose with delta target pose
     target_pose = {'y': (robot_pose[1]+delta_y_world)[0],
                    'x': (robot_pose[0]+delta_x_world)[0]}
