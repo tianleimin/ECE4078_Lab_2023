@@ -99,58 +99,54 @@ def print_target_fruits_pos(search_list, fruit_list, fruit_true_pos):
 # fully automatic navigation:
 # try developing a path-finding algorithm that produces the waypoints automatically
 import math
-import time
+
+def motion_control(waypoint, robot_pose, radius):
+    wheel_vel = 30  # tick   
+    wheel_radius = 0.05
+    linear_vel = (30/1000)*(2*math.pi*wheel_radius) # instead of using wheel_vel use linear_vel      
+    
+    # maybe just everything that controls the motion of the robot within a function so i can rerun it
+    current_angle = robot_pose[2]
+    target_angle = math.atan2(waypoint[1] - robot_pose[1], waypoint[0] - robot_pose[0])
+    angle_to_turn = target_angle - current_angle
+
+    # Ensure the turn angle is within the range of -π to π (or -180 degrees to 180 degrees)
+    if angle_to_turn >= math.pi:
+        angle_to_turn -= 2 * math.pi
+        turn_direction = -1
+    elif angle_to_turn < -math.pi:
+        angle_to_turn += 2 * math.pi
+        turn_direction = 1
+
+    turn_time = abs(angle_to_turn) / wheel_vel
+    print("Turning for {:.2f} seconds".format(turn_time))
+    ppi.set_velocity([0, turn_direction], turning_tick=wheel_vel, time=turn_time)
+
+    # Drive straight to the waypoint
+    distance_to_waypoint = math.sqrt((waypoint[0] - robot_pose[0])**2 + (waypoint[1] - robot_pose[1])**2)
+    drive_time = (distance_to_waypoint-radius) / wheel_vel # could minus 0.5m from waypoint to get to radius of 0.5
+
+    print("Driving for {:.2f} seconds".format(drive_time))
+    ppi.set_velocity([1, 0], tick=wheel_vel, time=drive_time)
 
 def drive_to_point(waypoint, robot_pose):
-    try:
-        # ... (initialize parameters and calibration data)
-
-        wheel_vel = 30  # tick
-        correction_gain = 0.1  # Adjust as needed
-        desired_radius = 0.5
-                    
-        while True:
-            current_angle = robot_pose[2]
-            target_angle = math.atan2(waypoint[1] - robot_pose[1], waypoint[0] - robot_pose[0])
-            angle_to_turn = target_angle - current_angle
-
-
-            # Ensure the turn angle is within the range of -π to π (or -180 degrees to 180 degrees)
-            if angle_to_turn >= math.pi:
-                angle_to_turn -= 2 * math.pi
-                turn_direction = -1
-            elif angle_to_turn < -math.pi:
-                angle_to_turn += 2 * math.pi
-                turn_direction = 1
-
-            turn_time = abs(angle_to_turn) / wheel_vel
-            print("Turning for {:.2f} seconds".format(turn_time))
-            ppi.set_velocity([0, turn_direction], turning_tick=wheel_vel, time=turn_time)
-
-            # Drive straight to the waypoint
-            distance_to_waypoint = math.sqrt((waypoint[0] - robot_pose[0])**2 + (waypoint[1] - robot_pose[1])**2)
-            drive_time = distance_to_waypoint / wheel_vel
-
-            print("Driving for {:.2f} seconds".format(drive_time))
-            ppi.set_velocity([1, 0], tick=wheel_vel, time=drive_time)
-
-            # Update robot pose based on sensor feedback
-            robot_pose = get_robot_pose()
-
-            # Check if the robot is within the desired radius of the waypoint
-            if distance_to_waypoint <= desired_radius:
-                #implement the delay of 2 seconds
-                break  # Stop the robot
-
-            # MODIFY: Sleep to control the update rate
-            time.sleep(0.1)
-
-    except Exception as e:
-        # Handle exceptions gracefully
-        print("An error occurred:", str(e))
-    finally:
-        # Implement a way to gracefully terminate the navigation process if needed
-        ppi.stop()  # Stop the robot
+    # Determines a set distance to travel from the target
+    desired_radius = 0.5
+    
+    # Drive the robot
+    motion_control(waypoint, robot_pose, desired_radius)
+    
+    # Update robot pose based on sensor feedback
+    robot_pose = get_robot_pose()
+    # Calculate the new distance to waypoint
+    distance_to_waypoint = math.sqrt((waypoint[0] - robot_pose[0])**2 + (waypoint[1] - robot_pose[1])**2)
+    # Check if the robot is within the desired radius of the waypoint
+    if distance_to_waypoint <= desired_radius:
+        #implement the delay of 2 seconds
+        ppi.set_velocity([0, 0], turning_tick=0, time=2)
+    elif distance_to_waypoint > desired_radius:
+        #rerun the motion control function
+        motion_control(waypoint, robot_pose, desired_radius)
 
     print("Arrived at [{}, {}]".format(waypoint[0], waypoint[1]))
 
