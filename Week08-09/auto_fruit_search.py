@@ -55,6 +55,7 @@ def read_true_map(fname):
                 else:
                     fruit_true_pos = np.append(fruit_true_pos, [[x, y]], axis=0)
 
+        #return (1), (2), (3)
         return fruit_list, fruit_true_pos, aruco_true_pos
 
 
@@ -182,8 +183,7 @@ class Node():
         return self.position == other.position
 
 
-#def astar(maze, start, end):
-def astar(search_list, fruits_list, fruits_true_pos, aruco_true_pos):
+def astar(search_list, fruits_true_pos, aruco_true_pos):
     """Returns a list of tuples as a path from the given start to the given end in the given maze"""
 
     #max dist. from (0,0)
@@ -284,6 +284,8 @@ def astar(search_list, fruits_list, fruits_true_pos, aruco_true_pos):
             # Add the child to the open list
             open_list.append(child)
 
+        return closed_list
+
 
 # main loop
 if __name__ == "__main__":
@@ -296,14 +298,19 @@ if __name__ == "__main__":
     ppi = PenguinPi(args.ip,args.port)
 
     # read in the true map
-    fruits_list, fruits_true_pos, aruco_true_pos = read_true_map(args.map)
-    search_list = read_search_list()
+    fruits_list, fruits_true_pos, aruco_true_pos = read_true_map(args.map) #list of fruits names, locations of fruits, locations of aruco markers
+    search_list = read_search_list() #inputted ordered list of fruits to search 
     print_target_fruits_pos(search_list, fruits_list, fruits_true_pos)
 
     waypoint = [0.0,0.0]
     robot_pose = [0.0,0.0,0.0]
 
     path_planner()
+
+
+    # ---- We won't need the skeleton code below ----# 
+    # ---- Call astar function instead ----#
+    astar(search_list, fruits_list, fruits_true_pos, aruco_true_pos):
 
     # The following is only a skeleton code for semi-auto navigation
     while True:
