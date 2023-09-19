@@ -7,7 +7,7 @@
 
 ---
 ## Introduction
-Milestone 5 is the integration of all the modules you completed in the previous miletones. Integrate your work from M1 to M4 so that the robot can create a map of the arena containing the estimated poses of 10 ArUco markers ([M2: SLAM](../Week03-05/)), 10 objects ([M3: CV](../Week06-07/)), and then perform the grocery shopping task ([M4: navigation](../Week08-09/)). The actual task is very similar to the Level 3 M4 task, which is
+Milestone 5 is the integration of all the modules you completed in the previous milestones. Integrate your work from M1 to M4 so that the robot can create a map of the arena containing the estimated poses of 10 ArUco markers ([M2: SLAM](../Week03-05/)), 10 objects ([M3: CV](../Week06-07/)), and then perform the grocery shopping task ([M4: navigation](../Week08-09/)). The actual task is very similar to the Level 3 M4 task, which is
 
 **M5 task:** Given a shopping list ([example](../Week08-09/M4_prac_shopping_list.txt)) of 5 targets, your task is to autonomously navigate to the given list of fruits&vegs in order, while avoiding obstacles along the way. The robot should stop within 0.5m radius of the target for 2 seconds before moving onto the next target. The following also applies to M5:
 - **A true map will NOT be given in M5**, only the shopping list will be provided indicating which 5 targets are to be reached in which order
@@ -18,7 +18,7 @@ Milestone 5 is the integration of all the modules you completed in the previous 
 **The final demo will follow the same procedure**, M5 is also your trial run for final demo to help you identify improvements to be made before the final demo.
 
 **Important note**: 
-- As usual, you are not allowed to use true poses of robot or objects during mapping, manually interfer with the robot or the arena, or teleoperate the robot during navigation
+- As usual, you are not allowed to use true poses of robot or objects during mapping, manually interfere with the robot or the arena, or teleoperate the robot during navigation
 - Although the final demo is likely to be the same as M5 (at least the task), minor details/rules/marking scheme are still subject to change
 - **PLEASE COMMENT YOUR CODE**. This will speed up the marking process and allow us to provide better feedback if you clearly explain your workflow in your code
 
@@ -60,6 +60,6 @@ Below are some suggestions on how you may improve your integrated system and liv
 
 ### Navigation
 - If you are taking the semi-auto waypoint navigation approach, improve the map visualization for interactively specifying waypoints during delivery and verifying whether the robot stops inside / outside the 0.5m radius of a target
-- During navigation, consider including oppurtunities for the robot to self-correct its path or reset its location in the arena to prevent errors from accumulating
+- During navigation, consider including opportunities for the robot to self-correct its path or reset its location in the arena to prevent errors from accumulating
 - Make use of your SLAM component to continuously correct pose estimation and update the path planning
-- Make use of visual information to improve the pose estimation and path planning. For example, keeping an object in the center of the robot's view when driving towards it
+- Make use of visual information to improve the pose estimation and path planning. For example, keeping an object in the centre of the robot's view when driving towards it
