@@ -24,7 +24,7 @@ slam_score = ((0.12 - Aligned_RMSE)/(0.12 - 0.02)) x 80
 **Note:** If your Aligned_RMSE value goes above the upper bound 0.12, your slam_score will be 0. If the Aligned_RMSE value goes below the lower bound 0.02, your slam_score will be 80, i.e., 0 ≤ slam_score ≤ 80
 
 ### [NEW] Update on M2 mark calculation
-To help teams with a relatively lower SLAM accuracy, we have changed the slam_score vs. NumberOfFoundMarkers from the original 80/20 split to a 60/40 for M2 ONLY, which means the team's M2 mark is now computed as:
+To lift teams with a relatively lower SLAM accuracy, we have updated the slam_score vs. NumberOfFoundMarkers from the original 80/20 split to a 60/40 for M2 ONLY, which means the team's M2 mark is now computed as:
 
 slam_score = ((0.12 - Aligned_RMSE)/(0.12 - 0.02)) x **60** (0 ≤ slam_score ≤ 60)
 
