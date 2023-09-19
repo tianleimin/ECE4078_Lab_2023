@@ -18,6 +18,7 @@ Please see below for detailed instructions regarding this M3 second-chance demo 
 - Please make sure that the code you submit is the version you intend to perform the re-run with, and will generate the correct targets.txt with the correct format and target names ([mapping_eval.py](mapping_eval.py) is case sensitive and your targets should be named in the same way as in the groundtruth maps). We will not allow code changes during the re-run (e.g., fixing typos) and you'll need to run your submission **as is**.
 - The re-run is for the **target pose estimation task ONLY**. There is no re-run for the detector_score part, you'll inherit the detector_score from your Week 8's M3 live demo. If you opt to perform the re-run, your Week 8 target_est_score will be **replaced** with the results of the re-run, even if the re-run gives worse results.
 - Please familiarise yourself on how to perform the target pose estimation (check the readme for which keyboard controls to use when collecting observations with pairing robot pose while running operate.py) and practice your driving strategies.
+- [NEW] For teams who have signed up to perform a full M3 target pose est re-run (Option 1), please book ONE re-run slot per team [here](https://calendar.app.google/jnegea4Fswa5xCt36).
 
 ---
 
