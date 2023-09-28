@@ -99,11 +99,29 @@ def print_target_fruits_pos(search_list, fruit_list, fruit_true_pos):
 # fully automatic navigation:
 # try developing a path-finding algorithm that produces the waypoints automatically
 import math
+# turn_time = 
+# Convert to m/s
+#left_speed_m = left_speed * self.wheels_scale
+#right_speed_m = right_speed * self.wheels_scale
+# angular_vel = (right_speed_m - left_speed_m) / self.wheels_width
+# turn_time = angle_to_turn / angular_vel
 
 def motion_control(waypoint, robot_pose, radius):
+    #import camera and baseline calibration parameters
+    fileS = "calibration/param/scale.txt"
+    scale = np.loadtxt(fileS, delimiter='')
+    fileB = "calibration/param/baseline.txt"
+    baseline = np.loadtxt(fileB, delimiter='')
+    
+    # Wheel speed in tick
     wheel_vel = 30  # tick   
-    wheel_radius = 0.05
-    linear_vel = (30/1000)*(2*math.pi*wheel_radius) # instead of using wheel_vel use linear_vel      
+    # Find wheel speed in m/s
+    left_wheel_speed = wheel_vel * scale
+    right_wheel_speed = wheel_vel * scale
+    
+    # Linear and Angular velocity
+    linear_velocity = (right_wheel_speed + left_wheel_speed) / 2.0 # instead of using wheel_vel use linear_vel      
+    angular_velocity = (right_wheel_speed + left_wheel_speed) / baseline
     
     # maybe just everything that controls the motion of the robot within a function so i can rerun it
     current_angle = robot_pose[2]
@@ -118,16 +136,17 @@ def motion_control(waypoint, robot_pose, radius):
         angle_to_turn += 2 * math.pi
         turn_direction = 1
 
-    turn_time = abs(angle_to_turn) / wheel_vel
+    turn_time = abs(angle_to_turn / angular_velocity)
     print("Turning for {:.2f} seconds".format(turn_time))
     ppi.set_velocity([0, turn_direction], turning_tick=wheel_vel, time=turn_time)
 
     # Drive straight to the waypoint
     distance_to_waypoint = math.sqrt((waypoint[0] - robot_pose[0])**2 + (waypoint[1] - robot_pose[1])**2)
-    drive_time = (distance_to_waypoint-radius) / wheel_vel # could minus 0.5m from waypoint to get to radius of 0.5
+    drive_time = (distance_to_waypoint-radius) / linear_velocity # could minus 0.5m from waypoint to get to radius of 0.5
 
     print("Driving for {:.2f} seconds".format(drive_time))
     ppi.set_velocity([1, 0], tick=wheel_vel, time=drive_time)
+
 
 def drive_to_point(waypoint, robot_pose):
     # Determines a set distance to travel from the target
