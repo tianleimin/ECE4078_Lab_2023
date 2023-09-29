@@ -95,6 +95,31 @@ class EKF:
         Q = self.predict_covariance(raw_drive_meas)
         self.P = F @ self.P @ F.T + Q
 
+    def add_landmarks(self, measurements):
+        if not measurements:
+            return
+
+        th = self.robot.state[2]
+        robot_xy = self.robot.state[0:2,:]
+        R_theta = np.block([[np.cos(th), -np.sin(th)],[np.sin(th), np.cos(th)]])
+
+        # Add new landmarks to the state
+        for lm in measurements:
+            if lm.tag in self.taglist:
+                # ignore known tags
+                continue
+            
+            lm_bff = lm.position
+            lm_inertial = robot_xy + R_theta @ lm_bff
+
+            self.taglist.append(int(lm.tag))
+            self.markers = np.concatenate((self.markers, lm_inertial), axis=1)
+
+            # Create a simple, large covariance to be fixed by the update step
+            self.P = np.concatenate((self.P, np.zeros((2, self.P.shape[1]))), axis=0)
+            self.P = np.concatenate((self.P, np.zeros((self.P.shape[0], 2))), axis=1)
+            self.P[-2,-2] = self.init_lm_cov**2
+            self.P[-1,-1] = self.init_lm_cov**2
     # the update step of EKF
     def update(self, measurements):
         if not measurements:

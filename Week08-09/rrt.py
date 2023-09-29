@@ -1,6 +1,3 @@
-import numpy as np
-import math
-
 # This is an adapted version of the RRT implementation done by Atsushi Sakai (@Atsushi_twi)
 class RRTC:
     """
@@ -95,19 +92,20 @@ class RRTC:
         """
         rrt path planning
         """
-        print("Starting planning...")
         self.start_node_list = [self.start]
         self.end_node_list = [self.end]
         while len(self.start_node_list) + len(self.end_node_list) <= self.max_nodes:
+            
+        #TODO: Complete the planning method ----------------------------------------------------------------            
             # 1. Sample and add a node in the start tree
             # Hint: You should use self.grow_tree above to add a node in the start tree here
             new_node = self.get_random_node()
             if self.grow_tree(self.start_node_list, new_node):
-                #print("grown tree")
+
                 # 2. Check whether trees can be connected
                 # Hint: You should use self.check_trees_distance above to check.
                 if self.check_trees_distance():
-                    #print("checking tree distance")
+    
                     # 3. Add the node that connects the trees and generate the path
                     # Note: It is important that you return path found as:
                     # return self.generate_final_course(len(self.start_node_list) - 1, len(self.end_node_list) - 1)
@@ -193,7 +191,6 @@ class RRTC:
         """
         Reconstruct path from start to end node
         """
-        print("Generating final course...")
         # First half
         node = self.start_node_list[start_mid_point]
         path = []
