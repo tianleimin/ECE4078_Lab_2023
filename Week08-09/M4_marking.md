@@ -34,14 +34,19 @@ We have divided M4 into 3 levels based on the 3 main components which you could 
 5. The **end condition of a run** is determined by the robot having attempted to navigate to the 1st-4th targets (0.5m radius to qualify as success), and clearly stopped within **1m of the 5th and last target**. 1m is the acceptable distance to show that a fruit is attempted and is the **intended** stopping location. However, mark for navigating successfully to a fruit will only be given for stopping within the 0.5m radius. Your score for a run will be calculated as:
 	- If you decide to stop a run before the end condition or have received 3 penalties, you will get zero score for that run
 	- Your robot has to make a visible attempt to try to navigate to all the target fruits, to at least drive pass them within a 1m radius, even if the robot may not accurately stop within 0.5m of the target. As an example, if your robot only reaches the first fruit and stops there, you will not receive any score for that run.
+ 	- [NEW] When your robot has stopped moving by itself, you may stop your run, and then your score for that run will be calculated. If you stop the run while the robot is moving, or if you manually stop the robot/script, you will receive zero score for that run. This is to prevent teams from stopping the run when the robot reach a fruit by luck
 
-6. The **entire** robot has to be within 0.5m of the target to be considered as successful
+6. [EDIT] The **entire** robot has to stop for approximately 2 seconds within 0.5m of the target to be considered as a successful navigation to that target
 
 7. If the robot reaches the target in the wrong order, you will receive zero score for that run
 
 8. We will review your code to see if you have implemented appropriate algorithms for the levels you have attempted. To gain credit for level 2 or 3, we must find evidence of path planning, or obstacle detection and avoidance (respectively) in your code. Successfully navigating to targets and/or avoiding collisions at these levels by luck will not grant you those marks by default
 
 9. The best run/attempt will be considered as your M4 score
+
+10. [NEW] If you are performing semi-automatic navigation (Level 1), the waypoints you can provide are x,y coordinates. You can't specify driving instructions, such as distance / time to drive, or turning angles
+
+11. [NEW] The robot must start at the origina (0,0,0). You can't teleoperate or manually place the robot next to the first target when starting the navigation.
 
 ### Level 1: Semi-auto navigation using waypoints
 To attempt Level 1, the locations of all the objects in the arena will be given to you in the full groundtruth map. The search order of the target fruits is given in the shopping list.
@@ -93,6 +98,11 @@ Zip your implementation and submit via the Moodle submission box (include all sc
 - Practise the marking steps (e.g. unzipping your code and running it) to ensure there are no issues during marking.
 - You may update the wheel and camera calibration parameters in the submission at the time of marking. All other scripts in your submission will need to be used as-is.
 
+**[NEW] Important reminders:**
+- The code submission is due **before the start** of your marking lab session (NOT before you run your live demo), e.g., for the Thu 3pm lab session the code submission deadline will be Thu 3pm. You will NOT be allowed to perform the live demo marking if you didn't submit your codes on time, unless a special consideration has been granted. Don't wait until the last minute and cut your submission too close.
+- You will NOT be able to change the codes after submission, except for the calibrated wheel and camera parameters (baselin.txt, scale.txt, intrinsic.txt, distCoeffs.txt). You will NOT be allowed to fix any typos, target label naming errors, generated maps formatting issues, indentation errors, missing files, scripts with wrong names, wrong implementation versions, wrong model weight files etc. in your submission at the time of live demo and will have to **run your downloaded code submission AS IS**.
+- [NEW] You need to apply for a special consideration at least one business day before the deadline. As a group project, by default we will NOT grant a special consideration application if only one team member was unable to work on the day of the demo or days before.
+
 
 #### Step 2: 
 **Do this BEFORE the demonstrator come to mark your team**
@@ -124,6 +134,7 @@ Zip your implementation and submit via the Moodle submission box (include all sc
 
 5. Open a terminal, or a new tab in the existing terminal (with the Python venv activated), navigate to the submission folder and run your M4 script by running [auto_fruit_search.py](auto_fruit_search.py) or whichever script(s) you need for the your chosen level to attempt
     - you may take the full or partial true map and the shopping list as the input files, depending on the level that you are attempting
+    - [NEW] note that [auto_fruit_search.py](auto_fruit_search.py) takes in command line arguments so that you can use the "--map" flag to specify the name of the map file that it uses. If you have implemented your own navigation scripts please make sure that it also uses a command line argument to specify the map to be used.
 
 6. For Level 1, you may enter as many waypoints as you want. For Level 2 or 3, you can only input a single command to start the autonomous navigation program
     - We will review your code and you will receive 0pt for M4 if we find that you are teleoperating the robot or used the full true map in Level 3

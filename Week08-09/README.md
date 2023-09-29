@@ -6,6 +6,8 @@
 	- [with a partially known map (Week 9)](#path-planning-with-a-partially-known-map-week-9)
 - Evaluation and marking: see [M4 marking instructions](M4_marking.md)
 
+**[NEW] Please note that all skeleton codes provided are for references only and are intended to get you started. They are not guaranteed to be bug-free either. To get better performance please make changes or write your own codes and test cases. As long as your codes perform the task and generate estimation maps that can be marked according to the evaluation schemes and scripts you are free to modify the skeleton codes.**
+
 ---
 
 ## Introduction
