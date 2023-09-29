@@ -212,7 +212,11 @@ def get_robot_pose(args,script_dir):
     weight_pose2 = 0.3
 
 # Perform weighted fusion of poses
-    robot_pose = (weight_pose1 * robot_pose_act) + (weight_pose2 * robot_pose_cam)
+    robot_pose = [[],[],[]]
+    
+    robot_pose[0] = weight_pose1*robot_pose_act[0][0] + weight_pose2*robot_pose_cam[0][0]
+    robot_pose[1] = weight_pose1*robot_pose_act[1][0] + weight_pose2*robot_pose_cam[0][1]
+    robot_pose[2] = weight_pose1*robot_pose_act[2][0] + weight_pose2*robot_pose_cam[0][2]
 
     ###############################################################
 
@@ -223,6 +227,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser("Fruit searching")
     parser.add_argument("--map", type=str, default='M4_true_map_full.txt') # change to 'M4_true_map_part.txt' for lv2&3
     parser.add_argument("--ip", metavar='', type=str, default='192.168.50.1')
+    parser.add_argument("--calib_dir", type=str, default="calibration/param/")
     parser.add_argument("--port", metavar='', type=int, default=8080)
     args, _ = parser.parse_known_args()
 
@@ -252,6 +257,6 @@ if __name__ == "__main__":
         path = path.reverse()
 
         for point in path:
-            drive_to_point(point, get_robot_pose())        
+            drive_to_point(point, get_robot_pose(args,os.path.dirname(os.path.abspath(__file__))))        
 
-        start = get_robot_pose()
+        start = get_robot_pose(args,os.path.dirname(os.path.abspath(__file__)))
