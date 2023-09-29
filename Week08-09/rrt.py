@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 # This is an adapted version of the RRT implementation done by Atsushi Sakai (@Atsushi_twi)
 class RRTC:
