@@ -25,6 +25,8 @@ sys.path.insert(0, "util")
 from pibot import PenguinPi
 import measure as measure
 
+import RRTC from RRT
+
 
 def read_true_map(fname):
     """Read the ground truth map and output the pose of the ArUco markers and 5 target fruits&vegs to search for
@@ -536,45 +538,24 @@ if __name__ == "__main__":
     print_target_fruits_pos(search_list, fruits_list, fruits_true_pos)
 
     waypoint = [0.0,0.0]
-    robot_pose = [0.0,0.0,0.0]
 
     # estimate the robot's pose
     robot_pose = get_robot_pose(args,os.path.dirname(os.path.abspath(__file__)))
 
-    # ---- We won't need the skeleton code below ----# 
-    # ---- Use RRT* + Djikstra's instead ----#
-    startpos = (0., 0.)
-    # estimate the robot's pose
-    robot_pose = get_robot_pose(args)
+    ##################################### New Week4 implementation
 
-    end_target = search_list[-1]
-    for target in fruits_true_pos:
-        if target[0] == end_target:
-            endpos = target[1]
-            break
-
-    #obstacles = fruits and markers
+    start = np.array([0.0, 0.0])
     obstacles = np.concatenate(fruits_true_pos, aruco_true_pos)
 
-    n_iter = 200
-    radius = 0.5
-    stepSize = 0.7
+    for i in range(len(fruits_true_pos)):
+        goal = fruits_true_pos[i]
+        rrtc = RRTC(start=start, goal=goal, width=16, height=10, obstacle_list=obstacles,
+              expand_dis=3.0, path_resolution=1)
 
-    G = RRT_star(startpos, endpos, obstacles, n_iter, radius, stepSize)
-    # G = RRT(startpos, endpos, obstacles, n_iter, radius, stepSize)
+        path = rrtc.planning() 
+        path = path.reverse()
 
-    if G.success:
-        path = dijkstra(G)
-        print(path)
-        plot(G, obstacles, radius, path)
-    else:
-        plot(G, obstacles, radius)
+        for point in path:
+            drive_to_point(point, get_robot_pose())        
 
-   for point in path:
-       robot_pose = get_robot_pose()
-       if np.linalg.norm(robot_pose, endpos) <= radius:
-           break
-
-       drive_to_point(point, robot_pose)
-       print("Finished driving to waypoint: {}; New robot pose: {}".format(waypoint,robot_pose))
-       ppi.set_velocity([0,0])
+        start = get_robot_pose()
