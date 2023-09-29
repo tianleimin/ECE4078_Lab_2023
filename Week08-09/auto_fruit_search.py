@@ -25,7 +25,8 @@ sys.path.insert(0, "util")
 from pibot import PenguinPi
 import measure as measure
 
-from rrt import RRTC
+from RRT import RRTC
+from Obstacle import *
 
 
 def read_true_map(fname):
