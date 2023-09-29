@@ -123,7 +123,7 @@ def motion_control(waypoint, robot_pose, radius):
     linear_velocity = (right_wheel_speed + left_wheel_speed) / 2.0 # instead of using wheel_vel use linear_vel      
     angular_velocity = (right_wheel_speed + left_wheel_speed) / baseline
     
-    # maybe just everything that controls the motion of the robot within a function so i can rerun it
+    # Determine the angle the robot needs to turn to face waypoint
     current_angle = robot_pose[2]
     target_angle = math.atan2(waypoint[1] - robot_pose[1], waypoint[0] - robot_pose[0])
     angle_to_turn = target_angle - current_angle
@@ -142,7 +142,7 @@ def motion_control(waypoint, robot_pose, radius):
 
     # Drive straight to the waypoint
     distance_to_waypoint = math.sqrt((waypoint[0] - robot_pose[0])**2 + (waypoint[1] - robot_pose[1])**2)
-    drive_time = (distance_to_waypoint-radius) / linear_velocity # could minus 0.5m from waypoint to get to radius of 0.5
+    drive_time = abs((distance_to_waypoint-radius) / linear_velocity) # could minus 0.5m from waypoint to get to radius of 0.5
 
     print("Driving for {:.2f} seconds".format(drive_time))
     ppi.set_velocity([1, 0], tick=wheel_vel, time=drive_time)
