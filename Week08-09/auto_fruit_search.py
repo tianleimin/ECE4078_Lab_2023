@@ -538,8 +538,6 @@ if __name__ == "__main__":
     waypoint = [0.0,0.0]
     robot_pose = [0.0,0.0,0.0]
 
-    path_planner()
-
     # estimate the robot's pose
     robot_pose = get_robot_pose(args,os.path.dirname(os.path.abspath(__file__)))
 
