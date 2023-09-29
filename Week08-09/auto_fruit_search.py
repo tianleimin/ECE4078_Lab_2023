@@ -14,6 +14,7 @@ from collections import deque
 from random import random
 import ast
 
+
 from Obstacle import *
 from RRT import RRTC
 
@@ -65,6 +66,8 @@ def read_true_map(fname):
                     fruit_true_pos = np.array([[x, y]])
                 else:
                     fruit_true_pos = np.append(fruit_true_pos, [[x, y]], axis=0)
+                    
+                #print(f'fruit: {fruit_list[-1]} at {fruit_true_pos}')
 
         #return (1), (2), (3)
         return fruit_list, fruit_true_pos, aruco_true_pos
@@ -117,13 +120,18 @@ def print_target_fruits_pos(search_list, fruit_list, fruit_true_pos):
 # angular_vel = (right_speed_m - left_speed_m) / self.wheels_width
 # turn_time = angle_to_turn / angular_vel
 
-def motion_control(waypoint, robot_pose, radius):
+def drive_to_point(waypoint, robot_pose, args):
+    print(f"Current pose: {robot_pose}")
     #import camera and baseline calibration parameters
-    fileS = "calibration/param/scale.txt"
-    scale = np.loadtxt(fileS, delimiter='')
-    fileB = "calibration/param/baseline.txt"
-    baseline = np.loadtxt(fileB, delimiter='')
+    #fileS = "calibration/param/scale.txt"
+    #scale = np.loadtxt(fileS, delimiter='')
+    datadir,ip_ = args.calib_dir, args.ip
     
+    scale = np.loadtxt("{}scale.txt".format(datadir), delimiter=',')
+    
+    #fileB = "calibration/param/baseline.txt"
+    baseline = np.loadtxt("{}baseline.txt".format(datadir), delimiter=',')
+
     # Wheel speed in tick
     wheel_vel = 30  # tick   
     # Find wheel speed in m/s
@@ -132,53 +140,57 @@ def motion_control(waypoint, robot_pose, radius):
     
     # Linear and Angular velocity
     linear_velocity = (right_wheel_speed + left_wheel_speed) / 2.0 # instead of using wheel_vel use linear_vel      
-    angular_velocity = (right_wheel_speed + left_wheel_speed) / baseline
+    #angular_velocity = (right_wheel_speed + left_wheel_speed) / baseline
+    
+    #print(f'linear vel: {linear_velocity}, angular vel: {angular_velocity}')
     
     # Determine the angle the robot needs to turn to face waypoint
     current_angle = robot_pose[2]
     target_angle = math.atan2(waypoint[1] - robot_pose[1], waypoint[0] - robot_pose[0])
     angle_to_turn = target_angle - current_angle
 
+    print(f'Current angle: {current_angle}, Target angle: {target_angle}, angle to turn: {angle_to_turn}')
+    
     # Ensure the turn angle is within the range of -π to π (or -180 degrees to 180 degrees)
     if angle_to_turn >= math.pi:
         angle_to_turn -= 2 * math.pi
-        turn_direction = -1
     elif angle_to_turn < -math.pi:
         angle_to_turn += 2 * math.pi
-        turn_direction = 1
 
-    turn_time = abs(angle_to_turn / angular_velocity)
+    turn_time = abs(angle_to_turn / (2*np.pi * baseline))
     print("Turning for {:.2f} seconds".format(turn_time))
-    ppi.set_velocity([0, turn_direction], turning_tick=wheel_vel, time=turn_time)
+    ppi.set_velocity([0, 1], turning_tick=wheel_vel, time=turn_time)
 
     # Drive straight to the waypoint
     distance_to_waypoint = math.sqrt((waypoint[0] - robot_pose[0])**2 + (waypoint[1] - robot_pose[1])**2)
-    drive_time = abs((distance_to_waypoint-radius) / linear_velocity) # could minus 0.5m from waypoint to get to radius of 0.5
+    drive_time = abs((distance_to_waypoint) / linear_velocity) # could minus 0.5m from waypoint to get to radius of 0.5
 
     print("Driving for {:.2f} seconds".format(drive_time))
     ppi.set_velocity([1, 0], tick=wheel_vel, time=drive_time)
+    
+    print("Arrived at [{}, {}]".format(waypoint[0], waypoint[1]))
 
 
-def drive_to_point(waypoint, robot_pose):
-    # Determines a set distance to travel from the target
-    desired_radius = 0.5
+#def drive_to_point(waypoint, robot_pose):
+#    # Determines a set distance to travel from the target
+#    desired_radius = 0.5
     
     # Drive the robot
-    motion_control(waypoint, robot_pose, desired_radius)
+#    motion_control(waypoint, robot_pose, desired_radius)
     
     # Update robot pose based on sensor feedback
-    robot_pose = get_robot_pose()
+#    robot_pose = get_robot_pose()
     # Calculate the new distance to waypoint
-    distance_to_waypoint = math.sqrt((waypoint[0] - robot_pose[0])**2 + (waypoint[1] - robot_pose[1])**2)
+#    distance_to_waypoint = math.sqrt((waypoint[0] - robot_pose[0])**2 + (waypoint[1] - robot_pose[1])**2)
     # Check if the robot is within the desired radius of the waypoint
-    if distance_to_waypoint <= desired_radius:
+#    if distance_to_waypoint <= desired_radius:
         #implement the delay of 2 seconds
-        ppi.set_velocity([0, 0], turning_tick=0, time=2)
-    elif distance_to_waypoint > desired_radius:
+#        ppi.set_velocity([0, 0], turning_tick=0, time=2)
+#    elif distance_to_waypoint > desired_radius:
         #rerun the motion control function
-        motion_control(waypoint, robot_pose, desired_radius)
+#        motion_control(waypoint, robot_pose, desired_radius)
 
-    print("Arrived at [{}, {}]".format(waypoint[0], waypoint[1]))
+#    print("Arrived at [{}, {}]".format(waypoint[0], waypoint[1]))
 
 
 def get_robot_pose(args,script_dir):
@@ -193,8 +205,8 @@ def get_robot_pose(args,script_dir):
     robot = Robot(baseline, scale, camera_matrix, dist_coeffs)
     slam = EKF(robot)
     # update the robot pose [x,y,theta]
-    robot_pose_act = slam.robot.state.tolist() # replace with your calculation
-
+    robot_pose_act = slam.get_state_vector().tolist() # replace with your calculation
+    print(f"robot_posee_act;{robot_pose_act}")
     #return robot_pose_act
     
     ###########################################################---Advanced part
@@ -214,8 +226,8 @@ def get_robot_pose(args,script_dir):
     weight_pose1 = 0.7
     weight_pose2 = 0.3
     
-    print(f'robot_pose_cam: {robot_pose_cam}')
-    print(f'robot_pose_act: {robot_pose_act}')
+    #print(f'robot_pose_cam: {robot_pose_cam}')
+    #print(f'robot_pose_act: {robot_pose_act}')
 # Perform weighted fusion of poses
     robot_pose = [[],[],[]]
     
@@ -242,7 +254,8 @@ if __name__ == "__main__":
     fruits_list, fruits_true_pos, aruco_true_pos = read_true_map(args.map) #list of fruits names, locations of fruits, locations of aruco markers
     search_list = read_search_list() #inputted ordered list of fruits to search 
     print_target_fruits_pos(search_list, fruits_list, fruits_true_pos)
-
+    print(f'fruits_true_pos: {fruits_true_pos}')
+    print(f'search list: {search_list}')
     waypoint = [0.0,0.0]
 
     # estimate the robot's pose
@@ -252,22 +265,35 @@ if __name__ == "__main__":
 
     start = np.array([0.0, 0.0])
     obstacles = fruits_true_pos.tolist() + aruco_true_pos.tolist()
-    obs_radius = 1
+    obs_radius = 0.1
 
     circle_obstacles = []
+    test = ""
     for obs in obstacles:
         circle_obstacles.append(Circle(obs[0], obs[1], obs_radius))
-        
-
+        test += f'Circle({obs[0]},{obs[1]},{obs_radius}), '
+    print(test)
+    
+    print("Entering fruits loop")
     for i in range(len(fruits_true_pos)):
         goal = fruits_true_pos[i]
-        rrtc = RRTC(start=start, goal=goal, width=16, height=10, obstacle_list=circle_obstacles,
-              expand_dis=3.0, path_resolution=1)
+        print(f'Goal: {goal}')
+        rrtc = RRTC(start=start, goal=goal+0.1, width=3, height=3, obstacle_list=circle_obstacles,
+              expand_dis=0.07, path_resolution=0.05)
 
+        print(f'rrtc: {rrtc}')
         path = rrtc.planning() 
-        path = path.reverse()
+        #path.reverse()
+        
+        print(f'Path found: {path}')
 
-        for point in path:
-            drive_to_point(point, get_robot_pose(args,os.path.dirname(os.path.abspath(__file__))))        
+        #for i in range(len(path)-2, -1, -1):
+        for i in range(1, len(path)):
+            point = path[i]
+            print(f'------------Driving to point: {point}')
+            drive_to_point(point, get_robot_pose(args,os.path.dirname(os.path.abspath(__file__))), args)        
 
+        print("###################################################")
+        print("FOUND GOAL!!!!!")
+        print("###################################################")
         start = get_robot_pose(args,os.path.dirname(os.path.abspath(__file__)))
