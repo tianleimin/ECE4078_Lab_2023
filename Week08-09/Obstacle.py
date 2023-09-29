@@ -1,5 +1,5 @@
 import numpy as np
-from .math_functions import *
+from math_functions import *
 
 
 class Polygon:

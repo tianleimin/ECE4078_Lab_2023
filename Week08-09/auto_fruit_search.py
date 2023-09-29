@@ -14,6 +14,9 @@ from collections import deque
 from random import random
 import ast
 
+from Obstacle import *
+from RRT import RRTC
+
 # import SLAM components
 sys.path.insert(0, "{}/slam".format(os.getcwd()))
 from slam.ekf import EKF
@@ -25,8 +28,7 @@ sys.path.insert(0, "util")
 from pibot import PenguinPi
 import measure as measure
 
-from RRT import RRTC
-from Obstacle import *
+
 
 
 def read_true_map(fname):
@@ -259,7 +261,7 @@ if __name__ == "__main__":
 
     for i in range(len(fruits_true_pos)):
         goal = fruits_true_pos[i]
-        rrtc = RRTC(start=start, goal=goal, width=16, height=10, obstacle_list=obstacles,
+        rrtc = RRTC(start=start, goal=goal, width=16, height=10, obstacle_list=circle_obstacles,
               expand_dis=3.0, path_resolution=1)
 
         path = rrtc.planning() 
