@@ -25,7 +25,7 @@ sys.path.insert(0, "util")
 from pibot import PenguinPi
 import measure as measure
 
-from RRT import RRTC
+from rrt import RRTC
 
 
 def read_true_map(fname):
@@ -188,9 +188,9 @@ def get_robot_pose(args,script_dir):
         scale /= 2
     baseline = np.loadtxt("{}baseline.txt".format(datadir) , delimiter=',')
     robot = Robot(baseline, scale, camera_matrix, dist_coeffs)
-    slam = EKF.init_ekf(datadir, ip_)
+    slam = EKF(robot)
     # update the robot pose [x,y,theta]
-    robot_pose_act = slam.robot.state # replace with your calculation
+    robot_pose_act = slam.robot.state.tolist() # replace with your calculation
 
     #return robot_pose_act
     
@@ -210,13 +210,15 @@ def get_robot_pose(args,script_dir):
         
     weight_pose1 = 0.7
     weight_pose2 = 0.3
-
+    
+    print(f'robot_pose_cam: {robot_pose_cam}')
+    print(f'robot_pose_act: {robot_pose_act}')
 # Perform weighted fusion of poses
     robot_pose = [[],[],[]]
     
     robot_pose[0] = weight_pose1*robot_pose_act[0][0] + weight_pose2*robot_pose_cam[0][0]
-    robot_pose[1] = weight_pose1*robot_pose_act[1][0] + weight_pose2*robot_pose_cam[0][1]
-    robot_pose[2] = weight_pose1*robot_pose_act[2][0] + weight_pose2*robot_pose_cam[0][2]
+    robot_pose[1] = weight_pose1*robot_pose_act[1][0] + weight_pose2*robot_pose_cam[1][0]
+    robot_pose[2] = weight_pose1*robot_pose_act[2][0] + weight_pose2*robot_pose_cam[2][0]
 
     ###############################################################
 
@@ -246,7 +248,7 @@ if __name__ == "__main__":
     ##################################### New Week4 implementation
 
     start = np.array([0.0, 0.0])
-    obstacles = np.concatenate(fruits_true_pos, aruco_true_pos)
+    obstacles = fruits_true_pos.tolist() + aruco_true_pos.tolist()
 
     for i in range(len(fruits_true_pos)):
         goal = fruits_true_pos[i]
