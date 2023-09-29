@@ -105,56 +105,73 @@ def print_target_fruits_pos(search_list, fruit_list, fruit_true_pos):
 # note that this function requires your camera and wheel calibration parameters from M2, and the "util" folder from M1
 # fully automatic navigation:
 # try developing a path-finding algorithm that produces the waypoints automatically
+# turn_time = 
+# Convert to m/s
+#left_speed_m = left_speed * self.wheels_scale
+#right_speed_m = right_speed * self.wheels_scale
+# angular_vel = (right_speed_m - left_speed_m) / self.wheels_width
+# turn_time = angle_to_turn / angular_vel
+
+def motion_control(waypoint, robot_pose, radius):
+    #import camera and baseline calibration parameters
+    fileS = "calibration/param/scale.txt"
+    scale = np.loadtxt(fileS, delimiter='')
+    fileB = "calibration/param/baseline.txt"
+    baseline = np.loadtxt(fileB, delimiter='')
+    
+    # Wheel speed in tick
+    wheel_vel = 30  # tick   
+    # Find wheel speed in m/s
+    left_wheel_speed = wheel_vel * scale
+    right_wheel_speed = wheel_vel * scale
+    
+    # Linear and Angular velocity
+    linear_velocity = (right_wheel_speed + left_wheel_speed) / 2.0 # instead of using wheel_vel use linear_vel      
+    angular_velocity = (right_wheel_speed + left_wheel_speed) / baseline
+    
+    # Determine the angle the robot needs to turn to face waypoint
+    current_angle = robot_pose[2]
+    target_angle = math.atan2(waypoint[1] - robot_pose[1], waypoint[0] - robot_pose[0])
+    angle_to_turn = target_angle - current_angle
+
+    # Ensure the turn angle is within the range of -π to π (or -180 degrees to 180 degrees)
+    if angle_to_turn >= math.pi:
+        angle_to_turn -= 2 * math.pi
+        turn_direction = -1
+    elif angle_to_turn < -math.pi:
+        angle_to_turn += 2 * math.pi
+        turn_direction = 1
+
+    turn_time = abs(angle_to_turn / angular_velocity)
+    print("Turning for {:.2f} seconds".format(turn_time))
+    ppi.set_velocity([0, turn_direction], turning_tick=wheel_vel, time=turn_time)
+
+    # Drive straight to the waypoint
+    distance_to_waypoint = math.sqrt((waypoint[0] - robot_pose[0])**2 + (waypoint[1] - robot_pose[1])**2)
+    drive_time = abs((distance_to_waypoint-radius) / linear_velocity) # could minus 0.5m from waypoint to get to radius of 0.5
+
+    print("Driving for {:.2f} seconds".format(drive_time))
+    ppi.set_velocity([1, 0], tick=wheel_vel, time=drive_time)
+
+
 def drive_to_point(waypoint, robot_pose):
-    try:
-        # ... (initialize parameters and calibration data)
-
-        wheel_vel = 30  # tick
-        correction_gain = 0.1  # Adjust as needed
-        desired_radius = 0.5
-                    
-        while True:
-            current_angle = robot_pose[2]
-            target_angle = math.atan2(waypoint[1] - robot_pose[1], waypoint[0] - robot_pose[0])
-            angle_to_turn = target_angle - current_angle
-
-
-            # Ensure the turn angle is within the range of -π to π (or -180 degrees to 180 degrees)
-            if angle_to_turn >= math.pi:
-                angle_to_turn -= 2 * math.pi
-                turn_direction = -1
-            elif angle_to_turn < -math.pi:
-                angle_to_turn += 2 * math.pi
-                turn_direction = 1
-
-            turn_time = abs(angle_to_turn) / wheel_vel
-            print("Turning for {:.2f} seconds".format(turn_time))
-            ppi.set_velocity([0, turn_direction], turning_tick=wheel_vel, time=turn_time)
-
-            # Drive straight to the waypoint
-            distance_to_waypoint = math.sqrt((waypoint[0] - robot_pose[0])**2 + (waypoint[1] - robot_pose[1])**2)
-            drive_time = distance_to_waypoint / wheel_vel
-
-            print("Driving for {:.2f} seconds".format(drive_time))
-            ppi.set_velocity([1, 0], tick=wheel_vel, time=drive_time)
-
-            # Update robot pose based on sensor feedback
-            robot_pose = get_robot_pose()
-
-            # Check if the robot is within the desired radius of the waypoint
-            if distance_to_waypoint <= desired_radius:
-                #implement the delay of 2 seconds
-                break  # Stop the robot
-
-            # MODIFY: Sleep to control the update rate
-            time.sleep(0.1)
-
-    except Exception as e:
-        # Handle exceptions gracefully
-        print("An error occurred:", str(e))
-    finally:
-        # Implement a way to gracefully terminate the navigation process if needed
-        ppi.stop()  # Stop the robot
+    # Determines a set distance to travel from the target
+    desired_radius = 0.5
+    
+    # Drive the robot
+    motion_control(waypoint, robot_pose, desired_radius)
+    
+    # Update robot pose based on sensor feedback
+    robot_pose = get_robot_pose()
+    # Calculate the new distance to waypoint
+    distance_to_waypoint = math.sqrt((waypoint[0] - robot_pose[0])**2 + (waypoint[1] - robot_pose[1])**2)
+    # Check if the robot is within the desired radius of the waypoint
+    if distance_to_waypoint <= desired_radius:
+        #implement the delay of 2 seconds
+        ppi.set_velocity([0, 0], turning_tick=0, time=2)
+    elif distance_to_waypoint > desired_radius:
+        #rerun the motion control function
+        motion_control(waypoint, robot_pose, desired_radius)
 
     print("Arrived at [{}, {}]".format(waypoint[0], waypoint[1]))
 
@@ -193,7 +210,6 @@ def get_robot_pose(args,script_dir):
 
 # Perform weighted fusion of poses
     robot_pose = (weight_pose1 * robot_pose_act) + (weight_pose2 * robot_pose_cam)
-    ####################################################
 
     return robot_pose
 
@@ -527,6 +543,8 @@ if __name__ == "__main__":
     # ---- We won't need the skeleton code below ----# 
     # ---- Use RRT* + Djikstra's instead ----#
     startpos = (0., 0.)
+    # estimate the robot's pose
+    robot_pose = get_robot_pose(args)
 
     end_target = search_list[-1]
     for target in fruits_true_pos:
