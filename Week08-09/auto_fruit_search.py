@@ -9,10 +9,10 @@ import argparse
 import time
 
 # import SLAM components
-# sys.path.insert(0, "{}/slam".format(os.getcwd()))
-# from slam.ekf import EKF
-# from slam.robot import Robot
-# import slam.aruco_detector as aruco
+sys.path.insert(0, "{}/slam".format(os.getcwd()))
+from slam.ekf import EKF
+from slam.robot import Robot
+import slam.aruco_detector as aruco
 
 # import utility functions
 sys.path.insert(0, "util")
@@ -170,13 +170,21 @@ def drive_to_point(waypoint, robot_pose):
     print("Arrived at [{}, {}]".format(waypoint[0], waypoint[1]))
 
 
-def get_robot_pose():
+def get_robot_pose(args):
     ####################################################
     # TODO: replace with your codes to estimate the pose of the robot
     # We STRONGLY RECOMMEND you to use your SLAM code from M2 here
-
+    datadir,ip_ = args.calib_dir, args.ip
+    camera_matrix = np.loadtxt("{}intrinsic.txt".format(datadir), delimiter=',')
+    dist_coeffs = np.loadtxt("{}distCoeffs.txt".format(datadir), delimiter=',')
+    scale = np.loadtxt("{}scale.txt".format(datadir), delimiter=',')
+    if ip_ == 'localhost':
+        scale /= 2
+    baseline = np.loadtxt("{}baseline.txt".format(datadir) , delimiter=',')
+    robot = Robot(baseline, scale, camera_matrix, dist_coeffs)
+    slam = EKF.init_ekf(datadir, ip_)
     # update the robot pose [x,y,theta]
-    robot_pose = [0.0,0.0,0.0] # replace with your calculation
+    robot_pose = slam.robot.state # replace with your calculation
     ####################################################
 
     return robot_pose
@@ -339,7 +347,7 @@ if __name__ == "__main__":
             continue
 
         # estimate the robot's pose
-        robot_pose = get_robot_pose()
+        robot_pose = get_robot_pose(args)
 
         # robot drives to the waypoint
         waypoint = [x,y]
