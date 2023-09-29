@@ -249,6 +249,12 @@ if __name__ == "__main__":
 
     start = np.array([0.0, 0.0])
     obstacles = fruits_true_pos.tolist() + aruco_true_pos.tolist()
+    obs_radius = 1
+
+    circle_obstacles = []
+    for obs in obstacles:
+        circle_obstacles.append(Circle(obs[0], obs[1], obs_radius))
+        
 
     for i in range(len(fruits_true_pos)):
         goal = fruits_true_pos[i]
