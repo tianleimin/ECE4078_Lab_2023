@@ -177,9 +177,7 @@ def drive_to_point(waypoint, robot_pose):
 
 
 def get_robot_pose(args,script_dir):
-    ####################################################
-    # TODO: replace with your codes to estimate the pose of the robot
-    # We STRONGLY RECOMMEND you to use your SLAM code from M2 here
+    #################################################### --- Normal
     datadir,ip_ = args.calib_dir, args.ip
     camera_matrix = np.loadtxt("{}intrinsic.txt".format(datadir), delimiter=',')
     dist_coeffs = np.loadtxt("{}distCoeffs.txt".format(datadir), delimiter=',')
@@ -191,7 +189,10 @@ def get_robot_pose(args,script_dir):
     slam = EKF.init_ekf(datadir, ip_)
     # update the robot pose [x,y,theta]
     robot_pose_act = slam.robot.state # replace with your calculation
+
+    #return robot_pose_act
     
+    ###########################################################---Advanced part
     image_poses = {}
     with open(f'{script_dir}/lab_output/images.txt') as fp:
         for line in fp.readlines():
@@ -210,6 +211,8 @@ def get_robot_pose(args,script_dir):
 
 # Perform weighted fusion of poses
     robot_pose = (weight_pose1 * robot_pose_act) + (weight_pose2 * robot_pose_cam)
+
+    ###############################################################
 
     return robot_pose
 
