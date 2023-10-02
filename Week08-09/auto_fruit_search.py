@@ -164,7 +164,7 @@ def drive_to_point(waypoint, robot_pose, args):
 
     # Drive straight to the waypoint
     distance_to_waypoint = math.sqrt((waypoint[0] - robot_pose[0])**2 + (waypoint[1] - robot_pose[1])**2)
-    drive_time = abs((distance_to_waypoint) / linear_velocity) # could minus 0.5m from waypoint to get to radius of 0.5
+    drive_time = abs((distance_to_waypoint) / wheel_vel) # could minus 0.5m from waypoint to get to radius of 0.5
 
     print("Driving for {:.2f} seconds".format(drive_time))
     ppi.set_velocity([1, 0], tick=wheel_vel, time=drive_time)
