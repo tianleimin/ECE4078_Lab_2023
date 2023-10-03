@@ -158,7 +158,8 @@ def drive_to_point(waypoint, robot_pose, args):
     elif angle_to_turn < -math.pi:
         angle_to_turn += 2 * math.pi
 
-    turn_time = abs(angle_to_turn / (2*np.pi * baseline))
+    #turn_time = abs(angle_to_turn / (2*np.pi * baseline))
+    turn_time = abs(angle_to_turn) / (np.pi/ 4)
     print("Turning for {:.2f} seconds".format(turn_time))
     ppi.set_velocity([0, 1], turning_tick=wheel_vel, time=turn_time)
 
