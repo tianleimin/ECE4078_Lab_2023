@@ -8,7 +8,8 @@ import numpy as np
 import math
 import json
 
-from RRT import *
+#from RRT import *
+from rrt import RRTC
 from Obstacle import *
 # import utility functions
 sys.path.insert(0, "{}/util".format(os.getcwd()))
@@ -209,7 +210,8 @@ class Operate:
         #print(f'linear vel: {linear_velocity}, angular vel: {angular_velocity}')
         
         # Determine the angle the robot needs to turn to face waypoint
-        current_angle = robot_pose[2][0]
+        #current_angle = robot_pose[2][0]
+        current_angle = robot_pose[2]
         target_angle = math.atan2(waypoint[1] - robot_pose[1], waypoint[0] - robot_pose[0])
         angle_to_turn = target_angle - current_angle
 
@@ -224,7 +226,10 @@ class Operate:
             #self.command[0,1]
 
         operate.control_clock=time.time()
-        turn_time = abs(angle_to_turn / (2*np.pi * baseline))
+        #turn_time = abs(angle_to_turn / (2*np.pi * baseline))
+        #turn_time = abs(angle_to_turn / (np.pi / 4))
+        turn_time = abs(baseline*angle_to_turn*0.5) / (scale*wheel_vel)
+        
         #print("Turning for {:.2f} seconds".format(turn_time))
         print(f'turning for {turn_time}')
         #ppi.set_velocity([0, 1], turning_tick=wheel_vel, time=turn_time)
@@ -241,9 +246,16 @@ class Operate:
             
         
         # Drive straight to the waypoint
-        distance_to_waypoint = math.sqrt((waypoint[0] - robot_pose[0][0])**2 + (waypoint[1] - robot_pose[1][0])**2)
+        #distance_to_waypoint = math.sqrt((waypoint[0] - robot_pose[0][0])**2 + (waypoint[1] - robot_pose[1][0])**2)
+        distance_to_waypoint = math.sqrt((waypoint[0] - robot_pose[0])**2 + (waypoint[1] - robot_pose[1])**2)
+
         print(linear_velocity)
-        drive_time = abs((distance_to_waypoint) / linear_velocity) # could minus 0.5m from waypoint to get to radius of 0.5
+        #drive_time = abs((distance_to_waypoint) / wheel_vel) # could minus 0.5m from waypoint to get to radius of 0.5
+        
+        drive_time = abs((distance_to_waypoint) / (wheel_vel*scale))
+        
+        print(f'Distance to drive: {distance_to_waypoint}')
+
 
         print("Driving for {:.2f} seconds".format(drive_time))
         #ppi.set_velocity([1, 0], tick=wheel_vel, time=drive_time)
@@ -261,7 +273,7 @@ class Operate:
             #print("----------------------------")
             
         self.command['motion'] = [0,0]
-        print("Arrived at [{}, {}]".format(waypoint[0], waypoint[1]))
+        print("Arrived at [{}, {}]\n".format(waypoint[0], waypoint[1]))
 
     # camera control
     def take_pic(self):
@@ -538,16 +550,21 @@ if __name__ == "__main__":
     ###########################################
     
     print("Entering fruits loop")
+    current_pos = [0,0,0]
     for i in range(len(fruits_true_pos)):
+        print("########################### NEW WAYPOINT ######################################\n")
         goal = fruits_true_pos[i]
         print(f'Goal: {goal}')
         waypoint = [0,0]
-        waypoint[0] = goal[0] + 0.1
+        waypoint[0] = goal[0]
         waypoint[1] = goal[1]
-        operate.drive_to_point(waypoint, operate.get_robot_pose(), args)
+        #current_pos = operate.get_robot_pose()
         
+        operate.drive_to_point(waypoint, current_pos, args)
+        current_pos[2] = math.atan2((waypoint[1] - current_pos[1]), (waypoint[0] - current_pos[0]))
+        current_pos[0:2] = waypoint
         #path planning below
-        """
+        '''
         rrtc = RRTC(start=start, goal=goal+0.1, width=3, height=3, obstacle_list=circle_obstacles,
               expand_dis=0.07, path_resolution=0.05)
 
@@ -568,4 +585,6 @@ if __name__ == "__main__":
         print("FOUND GOAL!!!!!")
         print("###################################################")
         start = operate.get_robot_pose(args,os.path.dirname(os.path.abspath(__file__)))
-        """
+        '''
+        
+        #add a code to stop the robot 
