@@ -9,6 +9,7 @@ import json
 from rrt3 import RrtConnect
 #from rrt import RRTC
 from Obstacle import *
+from operate import Operate
 # import utility functions
 sys.path.insert(0, "{}/util".format(os.getcwd()))
 from util.pibot import PenguinPi    # access the robot
@@ -102,13 +103,48 @@ def print_target_fruits_pos(search_list, fruit_list, fruit_true_pos):
         n_fruit += 1
 
 
-def drive_to_waypoint(waypoint, robot_pose, args):
-    datadir,_ = args.calib_dir, args.ip
-
+def drive_to_waypoint(waypoint, robot_pose):
+    '''
+        Function that implements the driving of the robot
+    '''
+    
     # Read in baseline and scale parameters
+    datadir = "calibration/param/"
+    scale = np.loadtxt("{}scale.txt".format(datadir), delimiter=',')
+    
+    # Read in the waypoint values
+    waypoint_x = waypoint[0]
+    waypoint_y = waypoint[1]
+    
+    # Read in robot pose values
+    robot_pose_x = robot_pose[0]
+    robot_pose_y = robot_pose[1]
+    
+    # Wheel ticks in m/s
+    wheel_ticks = 30
+
+    target_angle = turn_to_waypoint(waypoint, robot_pose)
+
+    # Drive straight to waypoint
+    distance_to_waypoint = math.sqrt((waypoint_x - robot_pose_x)**2 + (waypoint_y - robot_pose_y)**2)
+    drive_time = abs(float((distance_to_waypoint) / (wheel_ticks*scale))) 
+
+    print("Driving for {:.2f} seconds".format(drive_time))
+    motion_controller([1,0], wheel_ticks, drive_time)
+    print("Arrived at [{}, {}]".format(waypoint[1], waypoint[0]))
+    
+    update_robot_pose = [waypoint[0], waypoint[1], target_angle]
+    return update_robot_pose 
+
+def turn_to_waypoint(waypoint, robot_pose):
+    '''
+        Function that implements the turning of the robot
+    '''
+    # Read in baseline and scale parameters
+    datadir = "calibration/param/"
     scale = np.loadtxt("{}scale.txt".format(datadir), delimiter=',')
     baseline = np.loadtxt("{}baseline.txt".format(datadir), delimiter=',')
-    
+
     # Read in the waypoint values
     waypoint_x = waypoint[0]
     waypoint_y = waypoint[1]
@@ -121,75 +157,65 @@ def drive_to_waypoint(waypoint, robot_pose, args):
     # Wheel ticks in m/s
     wheel_ticks = 30
 
-
-    # Calculate the angle from robot's current position to the target waypoint
-    target_angle = math.atan2(waypoint_y - robot_pose_y, waypoint_x - robot_pose_x)
-
-    # Calculate the angle to turn to align with the target angle
-    angle_to_turn = target_angle - robot_pose_theta
-    print(f'Angle to turn {angle_to_turn}')
-
-    '''
-    # Ensure the angle is within the range of -pi to pi
-    if angle_to_turn > math.pi:
-        angle_to_turn -= 2 * math.pi
-    elif angle_to_turn < -math.pi:
-        angle_to_turn += 2 * math.pi
-    '''
-    if target_angle < 0:
-        angle = angle_to_turn - 2*np.pi
-    else:
-        angle = angle_to_turn + 2*np.pi
-        
-    if abs(angle_to_turn) > abs(angle):
-        theta_error = angle
-    else:
-        theta_error = angle_to_turn
-        
+    # Calculate turning varibles
+    turn_time = 0
+    theta_target = math.atan2(waypoint_y - robot_pose_y, waypoint_x - robot_pose_x) # angle from robot's current position to the target waypoint
+    theta_delta = theta_target - robot_pose_theta # How far the robot must turn from current pose
     
-    # Determine turn time
-    turn_time = abs(float(angle_to_turn / (2 *np.pi * baseline)))
-    #turn_time = float((abs(angle_to_turn)*baseline)/(2*wheel_ticks*scale))
+    if theta_delta > math.pi:
+        theta_delta -= 2 * math.pi
+    elif theta_delta < -math.pi:
+        theta_delta += 2 * math.pi
+
+    # Evaluate how long the robot should turn for
+    turn_time = float((abs(theta_delta)*baseline)/(2*wheel_ticks*scale))
     print("Turning for {:.2f} seconds".format(turn_time))
-
-    if theta_error > 0:
-         # Rotate counterclockwise (left)
-        ppi.set_velocity([0, -1], turning_tick=wheel_ticks, time=turn_time)
-    else:
-        # Rotate clockwise (right)
-        ppi.set_velocity([0, 1], turning_tick=wheel_ticks, time=turn_time)
-    '''
-    # Determine the direction of rotation (clockwise or counterclockwise)
-    if angle_to_turn > 0:
-        rotation_direction = "clockwise"
-    else:
-        rotation_direction = "counterclockwise"
-
-    # Set the velocity and turning direction based on rotation_direction
-    if rotation_direction == "clockwise":
-        # Rotate clockwise (right)
-        ppi.set_velocity([0, 1], turning_tick=wheel_ticks, time=turn_time)
-    elif rotation_direction == "counterclockwise":
-        # Rotate counterclockwise (left)
-        ppi.set_velocity([0, -1], turning_tick=wheel_ticks, time=turn_time)
-    else:
-        # No rotation needed
-        ppi.set_velocity([0, 0], turning_tick=wheel_ticks, time=0)
-    '''
-
-    # Drive straight to waypoint
-    distance_to_waypoint = math.sqrt((waypoint_x - robot_pose_x)**2 + (waypoint_y - robot_pose_y)**2)
-    drive_time = abs(float((distance_to_waypoint) / (wheel_ticks*scale))) 
-
-    print("Driving for {:.2f} seconds".format(drive_time))
-    ppi.set_velocity([1, 0], tick=wheel_ticks, time=drive_time)
     
-    print("Arrived at [{}, {}]".format(waypoint[0], waypoint[1]))
+    if theta_delta == 0:
+        print("No turn")
+    elif theta_delta > 0:
+        motion_controller([0,1], wheel_ticks, turn_time)
+    elif theta_delta < 0:
+        motion_controller([0,-1], wheel_ticks, turn_time)
+    else:
+        print("There is an issue with turning function")
+        
+    return theta_delta # delete once we get the robot_pose working and path plannning
     
-    update_robot_pose = [waypoint[0], waypoint[1], target_angle]
-    return update_robot_pose 
-
-
+    
+    
+def motion_controller(motion, wheel_ticks, drive_time):
+    lv,rv = 0.0, 0.0
+    
+    if not motion == [0,0]:
+        if motion[0] == 0:  # Turn
+            lv, rv = ppi.set_velocity(motion, tick=wheel_ticks, time=drive_time)
+        else:   # Drive forward
+            lv, rv = ppi.set_velocity(motion, tick=wheel_ticks, time=drive_time)
+        
+        # A good place to add the obstacle detection algorithm
+        
+        # Run SLAM Update Sequence
+        operate.take_pic()
+        drive_meas = measure.Drive(lv,rv,drive_time)
+        operate.update_slam(drive_meas)
+            
+def coords_to_obstacles(fruits_true_pos, aruco_true_pos):  
+    obstacles = []
+    
+    for x,y in fruits_true_pos:
+        # Create a circle object for all fruits
+        circle = Circle(x, y, 0.1)
+        obstacles.append(circle)
+        
+    for x,y in aruco_true_pos:
+        # Create square object for all aruco markers
+        square = Rectangle(np.array([x,y], 0.1, 0.1))
+        obstacles.append(square)   
+    
+    return obstacles   
+    
+    
 
 # main loop
 if __name__ == "__main__":
@@ -205,6 +231,7 @@ if __name__ == "__main__":
     args, _ = parser.parse_known_args()
 
     ppi = PenguinPi(args.ip,args.port)
+    operate = Operate(args)
 
     # read in the true map
     fruits_list, fruits_true_pos, aruco_true_pos = read_true_map(args.map) #list of fruits names, locations of fruits, locations of aruco markers
@@ -216,67 +243,61 @@ if __name__ == "__main__":
     # Define starting and robot pose 
     start = np.array([0.0, 0.0])
     robot_pose =  np.array([0.0, 0.0, 0.0])
-    #waypoint = [0.0,0.0]
+    waypoint = [0.0,0.0]
     
     ############Obstacles######################    
     start = np.array([0.0, 0.0])
-    obstacles = fruits_true_pos.tolist() + aruco_true_pos.tolist() # MAKE SURE ACURO IS SQURE AND FRUIT IS CIRCLE!!!!!
-    obs_radius = 0.1
-
-    obstacles_list = []
-    test = ""
+    #obstacles = fruits_true_pos.tolist() + aruco_true_pos.tolist() # MAKE SURE ACURO IS SQURE AND FRUIT IS CIRCLE!!!!!
+    #obs_radius = 0.1
     
-    for obs in obstacles:
-        x, y = obs[0], obs[1]
-        obstacles_list.append((x, y))
-    '''
-    for obs in obstacles:
-        circle_obstacles.append(Circle(obs[0], obs[1], obs_radius))
-        test += f'Circle({obs[0]},{obs[1]},{obs_radius}), '
-    '''
-    print(f'The obstacles are {obstacles_list}')
+    obstacles = coords_to_obstacles(fruits_true_pos, aruco_true_pos)
+    print("Obstacle fruit is:", obstacles)
+    ###########################################
+    
+    
+    ################Run SLAM####################
+    n_observed_markers = len(operate.ekf.taglist)
+    if n_observed_markers == 0:
+        if not operate.ekf_on:
+            print('SLAM is running')
+            operate.ekf_on = True
+        else:
+            print('> 2 landmarks is required for pausing')
+    elif n_observed_markers < 3:
+        print('> 2 landmarks is required for pausing')
+    else:
+        if not operate.ekf_on:
+            operate.request_recover_robot = True
+        operate.ekf_on = not operate.ekf_on
+        if operate.ekf_on:
+            print('SLAM is running')
+        else:
+            print('SLAM is paused')
     ###########################################
 
+
+    ####################################
+    # Within a while loop going through the search list create a path using rrt
+    
+    
+    # Then run the robot to go to way point by iterating through the waypoint list
+    
+    
+    ###########################################
+
+    
     ############Path Planning######################
     print("Entering fruits loop")
     path_list = []
     for i in range(len(fruits_true_pos)):
         goal = fruits_true_pos[i]
         
-        '''
-        #path planning below
-        rrtc = RRTC(start=start, goal=goal+0.1, width=3, height=3, obstacle_list=circle_obstacles,
-            expand_dis=0.07, path_resolution=0.05)
-
-        path = rrtc.planning()
-                
-        #reverse path [::-1]
-        '''
-        # Create an instance of RrtConnect with the updated parameters
-        rrt_conn = RrtConnect(s_start=start, s_goal=goal, step_len=0.01, goal_sample_rate=0.01, iter_max=1000, external_obstacles=obstacles_list)
-        print(f'Start is {start} and Goal is {goal}')
-        # Perform path planning
-        path = rrt_conn.planning(goal_tolerance=0.1)
-    
-        print(f'The path is {path}')
-    
-        #adding paths
-        path_list.append(path)
-
-        start = np.array(goal)
+        waypoint_x, waypoint_y = input("Enter waypoint (x,y): ").split(",")
+        waypoint = [float(waypoint_y), float(waypoint_x)]
         
-    ###########################################
-
-    ############Drive Based On Path Planning######################
-    for path in path_list:
-        #driving based on path
-        for waypoint in path[1:]:
-            print(f'Driving to waypoint {waypoint}')
-            robot_pose = drive_to_waypoint(waypoint, robot_pose, args)
-        print(f'Finished driving to waypoint {waypoint}')
-        ppi.set_velocity([0, 0], tick=0, time=2)
-
-        start = np.array(robot_pose[:2])  #update starting location based on robot pose
+        robot_pose = drive_to_waypoint(waypoint, robot_pose, args)
+        #robot_pose[2] = math.atan2((waypoint[1] - robot_pose[1]), (waypoint[0] - robot_pose[0]))
+        #robot_pose[0:2] = waypoint
 
 sys.exit()
     

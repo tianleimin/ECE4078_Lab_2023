@@ -6,7 +6,7 @@ import numpy as np
 import math
 import json
 
-from rrt3 import RrtConnect
+#from rrt3 import RrtConnect
 #from rrt import RRTC
 from Obstacle import *
 # import utility functions
@@ -127,7 +127,7 @@ def drive_to_waypoint(waypoint, robot_pose, args):
 
     # Calculate the angle to turn to align with the target angle
     angle_to_turn = target_angle - robot_pose_theta
-    print(f'Angle to turn {angle_to_turn}')
+
 
     '''
     # Ensure the angle is within the range of -pi to pi
@@ -146,6 +146,7 @@ def drive_to_waypoint(waypoint, robot_pose, args):
     else:
         theta_error = angle_to_turn
         
+    print(f'Angle to turn {theta_error}')
     
     # Determine turn time
     turn_time = abs(float(angle_to_turn / (2 *np.pi * baseline)))
@@ -184,7 +185,7 @@ def drive_to_waypoint(waypoint, robot_pose, args):
     print("Driving for {:.2f} seconds".format(drive_time))
     ppi.set_velocity([1, 0], tick=wheel_ticks, time=drive_time)
     
-    print("Arrived at [{}, {}]".format(waypoint[0], waypoint[1]))
+    print("Arrived at [{}, {}]".format(waypoint[1], waypoint[0]))
     
     update_robot_pose = [waypoint[0], waypoint[1], target_angle]
     return update_robot_pose 
@@ -222,19 +223,6 @@ if __name__ == "__main__":
     start = np.array([0.0, 0.0])
     obstacles = fruits_true_pos.tolist() + aruco_true_pos.tolist() # MAKE SURE ACURO IS SQURE AND FRUIT IS CIRCLE!!!!!
     obs_radius = 0.1
-
-    obstacles_list = []
-    test = ""
-    
-    for obs in obstacles:
-        x, y = obs[0], obs[1]
-        obstacles_list.append((x, y))
-    '''
-    for obs in obstacles:
-        circle_obstacles.append(Circle(obs[0], obs[1], obs_radius))
-        test += f'Circle({obs[0]},{obs[1]},{obs_radius}), '
-    '''
-    print(f'The obstacles are {obstacles_list}')
     ###########################################
 
     ############Path Planning######################
@@ -243,40 +231,12 @@ if __name__ == "__main__":
     for i in range(len(fruits_true_pos)):
         goal = fruits_true_pos[i]
         
-        '''
-        #path planning below
-        rrtc = RRTC(start=start, goal=goal+0.1, width=3, height=3, obstacle_list=circle_obstacles,
-            expand_dis=0.07, path_resolution=0.05)
-
-        path = rrtc.planning()
-                
-        #reverse path [::-1]
-        '''
-        # Create an instance of RrtConnect with the updated parameters
-        rrt_conn = RrtConnect(s_start=start, s_goal=goal, step_len=0.01, goal_sample_rate=0.01, iter_max=1000, external_obstacles=obstacles_list)
-        print(f'Start is {start} and Goal is {goal}')
-        # Perform path planning
-        path = rrt_conn.planning(goal_tolerance=0.1)
-    
-        print(f'The path is {path}')
-    
-        #adding paths
-        path_list.append(path)
-
-        start = np.array(goal)
+        waypoint_x, waypoint_y = input("Enter waypoint (x,y): ").split(",")
+        waypoint = [float(waypoint_y), float(waypoint_x)]
         
-    ###########################################
-
-    ############Drive Based On Path Planning######################
-    for path in path_list:
-        #driving based on path
-        for waypoint in path[1:]:
-            print(f'Driving to waypoint {waypoint}')
-            robot_pose = drive_to_waypoint(waypoint, robot_pose, args)
-        print(f'Finished driving to waypoint {waypoint}')
-        ppi.set_velocity([0, 0], tick=0, time=2)
-
-        start = np.array(robot_pose[:2])  #update starting location based on robot pose
+        robot_pose = drive_to_waypoint(waypoint, robot_pose, args)
+        #robot_pose[2] = math.atan2((waypoint[1] - robot_pose[1]), (waypoint[0] - robot_pose[0]))
+        #robot_pose[0:2] = waypoint
 
 sys.exit()
     

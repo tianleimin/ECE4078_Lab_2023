@@ -256,7 +256,7 @@ if __name__ == "__main__":
         rrt_conn = RrtConnect(s_start=start, s_goal=goal, step_len=0.01, goal_sample_rate=0.01, iter_max=1000, external_obstacles=obstacles_list)
         print(f'Start is {start} and Goal is {goal}')
         # Perform path planning
-        path = rrt_conn.planning(goal_tolerance=0.1)
+        path = rrt_conn.planning()
     
         print(f'The path is {path}')
     

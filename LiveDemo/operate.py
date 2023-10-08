@@ -7,10 +7,9 @@ import cv2
 import numpy as np
 import math
 import json
-import copy
 
 #from RRT import *
-from rrt2 import *
+from rrt import RRTC
 from Obstacle import *
 # import utility functions
 sys.path.insert(0, "{}/util".format(os.getcwd()))
@@ -234,7 +233,8 @@ class Operate:
         #print("Turning for {:.2f} seconds".format(turn_time))
         print(f'turning for {turn_time}')
         #ppi.set_velocity([0, 1], turning_tick=wheel_vel, time=turn_time)
-        self.command['motion'] = [0, 1]        
+        self.command['motion'] = [0, 1]
+        
         turn_time += time.time()
         while time.time() <= turn_time:
             #print("turning...")
@@ -274,7 +274,6 @@ class Operate:
             
         self.command['motion'] = [0,0]
         self.control()
-        time.sleep(2)
         print("Arrived at [{}, {}]\n".format(waypoint[0], waypoint[1]))
 
     # camera control
@@ -484,113 +483,6 @@ class Operate:
             sys.exit()
 
 
-    def generate_paths(self, fruits_list, aruco_list, search_list):
-        #getting index of fruits to be searched
-        #fruit_list_dict = dict(zip(self.fruit_list,range(len(self.fruit_list))))
-        #all_fruits = [x for x in range(len(self.fruit_list))]
-        #search_fruits = [fruit_list_dict[x] for x in self.search_list]
-        #other_fruits = list((set(all_fruits) | set(search_fruits)) - (set(all_fruits) & set(search_fruits)))
-
-        #adding markers as obstacles
-        obstacles = []
-        #for x,y in self.aruco_true_pos:
-        for x,y in aruco_list:
-            obstacles.append([x + 1.5, y + 1.5])
-
-        #adding other fruits as obstacles
-        for x,y in fruits_list:
-            #x,y = self.fruit_true_pos[idx]
-            
-            obstacles.append([x + 1.5, y + 1.5])
-
-        #printing search fruits location
-        for idx in range(len(search_list)):
-            print(f' {search_list[idx]} at {fruits_list[idx]}')
-
-        radius = 0.25
-        radius_success = False
-        while not radius_success:
-            try:
-                all_obstacles = generate_path_obstacles(obstacles, radius) #generating obstacles
-
-                #starting robot pose and empty paths
-                start = np.array([0,0]) + 1.5
-                paths = []
-                print("New path generated")
-
-
-                for idx in range(len(search_list)):
-                    success = False
-                    method = 1
-                    linear_offset = 0.3
-                    while not success:
-                        location = copy.deepcopy(fruits_list[idx])
-                        print(f'Location: {location}')
-                        if method == 1:
-                            offset = 0.2
-                            # Stop in front of fruit
-                            if location[0] > 0 and location[1] > 0:
-                                location -= [offset, offset]
-                            elif location[0] > 0 and location[1] < 0:
-                                location -= [offset, -offset]
-                            elif location[0] < 0 and location[1] > 0:
-                                location -= [-offset, offset]
-                            else:
-                                location += [offset, offset]
-                        elif method == 2:
-                            if location[1] > 0:
-                                location -= [0, linear_offset]
-                            else:
-                                location += [0, linear_offset]
-                        elif method == 3:
-                            if location[0] > 0:
-                                location -= [linear_offset,0]
-                            else:
-                                location += [linear_offset,0]
-                        elif method == 4:
-                            if location[1] > 0:
-                                location += [0, linear_offset]
-                            else:
-                                location -= [0, linear_offset]
-                        elif method == 5:
-                            if location[0] > 0:
-                                location += [linear_offset,0]
-                            else:
-                                location -= [linear_offset,0]
-                        else:
-                            break
-
-                        goal = np.array(location) + 1.5
-
-                        try:
-                            rrtc = RRT(start=start, goal=goal, width=3, height=3, obstacle_list=all_obstacles,
-                                expand_dis=1, path_resolution=0.1)
-                            path = rrtc.planning()[::-1] #reverse path
-                            success = True
-                            print("Success!")
-                        except:
-                            print(f"{self.fruit_list[idx]} Failed")
-                            method += 1
-
-                    print("printing path")
-                    #printing path
-                    for i in range(len(path)):
-                        x, y = path[i]
-                        path[i] = [x - 1.5, y - 1.5]
-                    print(f'The path is {path}')
-
-                    #adding paths
-                    paths.append(path)
-                    start = np.array(goal)
-                self.paths = paths
-                radius_success = True
-            except:
-                #self.radius -= 0.05
-                radius -= 0.05
-                print(f"Radius reduced to {radius}")
-                
-        return paths
-
 if __name__ == "__main__":
     import argparse
 
@@ -658,39 +550,37 @@ if __name__ == "__main__":
 
     ###########################################
     
-    print("######################## GENERATING PATHS ############################")
-    paths = operate.generate_paths(fruits_true_pos, aruco_true_pos, search_list)
-    print(f'--------------Final path is {paths}')
-    
-    start = [0,0,0]
-    print("###########################################\n")
-    print("Driving")
-    for path in paths:
-        #ignore the starting point (duplicates)
-        print(f"Current goal: {path[-1]}")
-        for i in range(1, len(path) - 1):
-            wp = path[i]
-            print(f'Current wp: {wp}')
-            robot_pose = operate.get_robot_pose()
-            robot_pose = [robot_pose[0], robot_pose[1], robot_pose[2]]
-            operate.drive_to_point(wp, robot_pose, args)
-            #operate.drive_to_point(wp, start, args)     
-            #current_angle = math.atan2()     
-            #start = [wp[0], wp[1], 
-        
-    
-    '''
     print("Entering fruits loop")
-    current_pos = [0,0]
+    current_pos = [0,0,0]
     for i in range(len(fruits_true_pos)):
         print("########################### NEW WAYPOINT ######################################\n")
         goal = fruits_true_pos[i]
-        print(f'Start: {start},Goal: {goal}')
-
-        path = operate.generate_paths(fruits_true_pos, aruco_true_pos, search_list)
-        print(f'Path found: {path}')
+        print(f'Goal: {goal}')
+        '''
+        waypoint = [0,0]
+        waypoint[0] = goal[0]
+        waypoint[1] = goal[1]
+        '''
+        #current_pos = operate.get_robot_pose()
         
-        start = goal
+        waypoint_x, waypoint_y = input("Enter waypoint (x,y): ").split(",")
+        waypoint = [float(waypoint_x), float(waypoint_y)]
+        
+        operate.drive_to_point(waypoint, current_pos, args)
+        current_pos[2] = math.atan2((waypoint[1] - current_pos[1]), (waypoint[0] - current_pos[0]))
+        current_pos[0:2] = waypoint
+        
+        
+        #path planning below
+        '''
+        rrtc = RRTC(start=start, goal=goal+0.1, width=3, height=3, obstacle_list=circle_obstacles,
+              expand_dis=0.07, path_resolution=0.05)
+
+        print(f'rrtc: {rrtc}')
+        path = rrtc.planning() 
+        #path.reverse()
+        
+        print(f'Path found: {path}')
         
         #for i in range(len(path)-2, -1, -1):
         for i in range(1, len(path)):
@@ -703,8 +593,6 @@ if __name__ == "__main__":
         print("FOUND GOAL!!!!!")
         print("###################################################")
         start = operate.get_robot_pose(args,os.path.dirname(os.path.abspath(__file__)))
-        
+        '''
         
         #add a code to stop the robot 
-        
-        '''
