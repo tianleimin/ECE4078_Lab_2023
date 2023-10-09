@@ -703,7 +703,7 @@ class Operate:
                 print(f"Radius reduced to {radius}")
                 
         return paths
-
+'''
     def path_planning(self,search_order):
         fileB = "calibration/param/baseline.txt"
         robot_radius = np.loadtxt(fileB, delimiter=',')*2 # robot radius = baseline of the robot/2.0
@@ -747,7 +747,7 @@ class Operate:
 
         print("Number of obstacle is : ",len(ox))
         return ox,oy
-        
+        '''
 # main loop
 if __name__ == "__main__":
     import argparse
@@ -755,6 +755,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser("Fruit searching")
     parser.add_argument("--ip", metavar='', type=str, default='192.168.50.1')
     parser.add_argument("--map", type=str, default='M4_true_map_full.txt')
+    #parser.add_argument("--map", type=str, default='lab_out/targets.txt')
+    
     parser.add_argument("--port", metavar='', type=int, default=8080)
     parser.add_argument("--calib_dir", type=str, default="calibration/param/")
     parser.add_argument("--save_data", action='store_true')
@@ -812,7 +814,7 @@ if __name__ == "__main__":
             wp = path[i]
             print(f'Current wp: {wp}')
             robot_pose = operate.get_robot_pose()
-            robot_pose = np.array([robot_pose[0], robot_pose[1], robot_pose[2]])
+            robot_pose = np.array(robot_pose[0], robot_pose[1], robot_pose[2])
             print("Robot Pose:", robot_pose)
             operate.drive_to_waypoint(wp, robot_pose)
         
