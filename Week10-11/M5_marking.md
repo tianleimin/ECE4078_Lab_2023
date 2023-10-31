@@ -9,6 +9,29 @@ The final demo is likely to be the same as M5, although minor details/rules/mark
 
 ---
 ## Marking schemes
+
+---
+### [NEW] Updates to M5 marking scheme
+We have adjusted the M5 marking scheme to give higher weights to mapping and to code implementation of navigation addressing the teams' difficulty in getting qualified navigation runs during M5. 
+
+The updated M5 marking scheme is as follow:
+- 30pt SLAM map
+~~~
+slam_score = (0.12 - Aligned_RMSE)/(0.12 - 0.02) x 20 + NumberOfFoundMarkers x 1 - Penalty
+0 ≤ slam_score ≤ 30
+~~~
+- 30pt Targets map
+~~~
+target_score[object] = (1 - estimation_error[object])/(1-0.025) x 3
+target_est_score = sum(target_score) - Penalty
+0 ≤ target_est_score ≤ 30
+~~~
+- 5pt if there is code or demo evidence of waypoint navigation
+- 5pt if there is code or demo evidence of path planning and navigation
+- 10pt for semi auto navigation (2pt per success in a qualified semi auto run - penalties)
+- 20pt for full auto navigation (4pt per success in a qualified full auto run - penalties)
+
+---
 ### Evaluation
 We have divided M5 into two components:
 1. Arena mapping (40pts)
